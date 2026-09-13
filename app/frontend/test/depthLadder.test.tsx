@@ -361,3 +361,63 @@ describe("DepthLadder (P7-4 cumulative column, divider, depth selector)", () => 
         expect(screen.getAllByTestId("bid-row")).toHaveLength(1);
     });
 });
+
+describe("DepthLadder (P8-4 two-pane scroll layout)", () => {
+    it("splits asks and bids into two depth-sized scroll panes with the spread bar pinned between them", () => {
+        const { container } = render(
+            <DepthLadder
+                book={book({ bestBid: 15000, bestAsk: 15025, bids: BIDS, asks: ASKS })}
+                lastCents={15025}
+            />,
+        );
+
+        const asksPane = container.querySelector(".depth-ladder__asks") as HTMLElement;
+        const bidsPane = container.querySelector(".depth-ladder__bids") as HTMLElement;
+        const divider = screen
+            .getByTestId("spread-value")
+            .closest(".depth-ladder__divider") as HTMLElement;
+
+        // two distinct pane elements plus the divider
+        expect(asksPane).not.toBeNull();
+        expect(bidsPane).not.toBeNull();
+        expect(divider).not.toBeNull();
+        expect(asksPane).not.toBe(bidsPane);
+
+        // each side's rows live only in their own pane -> independent scroll containers
+        for (const r of screen.getAllByTestId("ask-row")) {
+            expect(asksPane.contains(r)).toBe(true);
+        }
+        for (const r of screen.getAllByTestId("bid-row")) {
+            expect(bidsPane.contains(r)).toBe(true);
+        }
+        expect(asksPane.querySelectorAll('[data-testid="bid-row"]')).toHaveLength(0);
+        expect(bidsPane.querySelectorAll('[data-testid="ask-row"]')).toHaveLength(0);
+
+        // the spread bar is pinned between the panes and scrolls with neither side
+        expect(asksPane.contains(divider)).toBe(false);
+        expect(bidsPane.contains(divider)).toBe(false);
+        expect(
+            asksPane.compareDocumentPosition(divider) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+        expect(
+            divider.compareDocumentPosition(bidsPane) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+
+        // each pane is sized to the selected Depth window (Q8-5); default depth is 10
+        expect(asksPane.style.getPropertyValue("--depth-rows")).toBe("10");
+        expect(bidsPane.style.getPropertyValue("--depth-rows")).toBe("10");
+
+        // the sizing hook tracks the selector, symmetrically across both panes
+        fireEvent.change(screen.getByTestId("depth-select"), { target: { value: "14" } });
+        expect(
+            (container.querySelector(".depth-ladder__asks") as HTMLElement).style.getPropertyValue(
+                "--depth-rows",
+            ),
+        ).toBe("14");
+        expect(
+            (container.querySelector(".depth-ladder__bids") as HTMLElement).style.getPropertyValue(
+                "--depth-rows",
+            ),
+        ).toBe("14");
+    });
+});

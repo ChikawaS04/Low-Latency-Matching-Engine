@@ -1,7 +1,8 @@
 /*
  * OMS trading terminal theme (P5-5, header reworked P7-3, depth ladder P7-4,
  * trade tape P7-6, order entry P7-7, blotter P7-8, FIX inspector modal P7-9,
- * depth curve wired P7-10).
+ * depth curve wired P7-10, colour system reworked to Palette A neutral
+ * charcoal P8-2, themed scrollbars P8-3, two-pane depth ladder P8-4).
  *
  * Subject: a live limit-order-book terminal for one instrument (ASML), built as
  * a low-latency-systems portfolio piece; the reader is an engineer. The one bold
@@ -13,24 +14,37 @@
  */
 
 :root {
-    --bg: #0a0e17;
-    --surface: #10151f;
-    --surface-2: #161d29;
-    --line: #232c3b;
-    --line-strong: #303c50;
+    /* Palette A (neutral charcoal, IBKR-inspired) — value swap only; every token
+       NAME is stable so no component edit is forced (P8-2). */
+    --bg: #0E0E0F;
+    --surface: #17181A;
+    --surface-2: #1E2023;
+    --line: #26282B;
+    --line-strong: #33363B;
 
-    --text: #d4dae4;
-    --text-dim: #7c8798;
-    --text-faint: #56606f;
+    --text: #E6E7E9;
+    --text-dim: #8A8F98;
+    --text-faint: #5C6067;
 
-    --bid: #2ea043;
-    --bid-bar: rgba(46, 160, 67, 0.16);
-    --ask: #e5484d;
-    --ask-bar: rgba(229, 72, 77, 0.16);
+    --bid: #2E9E5B;
+    --bid-bar: rgba(46, 158, 91, 0.14);
+    --ask: #D13438;
+    --ask-bar: rgba(209, 52, 56, 0.14);
 
-    --live: #2ea043;
-    --warn: #d9a441;
-    --focus: #4c8dff;
+    /* --live aliases --bid; kept as its own token so no component reference
+       churns. --warn stays amber (retuned to sit with the charcoal set) — the
+       one honest non-charcoal signal for the degraded-link state. */
+    --live: #2E9E5B;
+    --warn: #C99A3C;
+    --focus: #4C8DFF;
+
+    /* Modal scrim: near-black over the charcoal base, no blue tint. */
+    --scrim: rgba(6, 6, 7, 0.7);
+
+    /* Themed-scrollbar tokens (defined here in P8-2, consumed by P8-3). */
+    --scroll-thumb: #3A3D42;
+    --scroll-thumb-hover: #4A4E54;
+    --scroll-track: transparent;
 
     --mono: "IBM Plex Mono", "JetBrains Mono", "SFMono-Regular", "SF Mono",
     "Cascadia Code", ui-monospace, Menlo, Consolas, monospace;
@@ -76,6 +90,83 @@ body {
 :where(button, input):focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 1px;
+}
+
+/* ---- themed scrollbars (P8-3) --------------------------------------------- */
+/* One shared treatment for every internal scroll region, driven entirely by the
+   P8-2 scroll tokens. Both axes are covered: width for the vertical panes,
+   height for the horizontal blotter. WebKit gets a custom 8px bar with the OS
+   arrow buttons and corner removed; Firefox gets its thin native bar tinted to
+   match. P8-4 keeps .depth-ladder__asks / .depth-ladder__bids, so those inherit
+   unchanged; P8-5's new blotter scroll body inherits by adding its class to the
+   selector lists below, no markup edit here. */
+
+.depth-ladder__asks,
+.depth-ladder__bids,
+.trade-tape__rows,
+.fix-inspector__list,
+.fix-inspector__detail,
+.open-orders {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+.depth-ladder__asks::-webkit-scrollbar,
+.depth-ladder__bids::-webkit-scrollbar,
+.trade-tape__rows::-webkit-scrollbar,
+.fix-inspector__list::-webkit-scrollbar,
+.fix-inspector__detail::-webkit-scrollbar,
+.open-orders::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.depth-ladder__asks::-webkit-scrollbar-track,
+.depth-ladder__bids::-webkit-scrollbar-track,
+.trade-tape__rows::-webkit-scrollbar-track,
+.fix-inspector__list::-webkit-scrollbar-track,
+.fix-inspector__detail::-webkit-scrollbar-track,
+.open-orders::-webkit-scrollbar-track {
+    background: var(--scroll-track);
+}
+
+.depth-ladder__asks::-webkit-scrollbar-thumb,
+.depth-ladder__bids::-webkit-scrollbar-thumb,
+.trade-tape__rows::-webkit-scrollbar-thumb,
+.fix-inspector__list::-webkit-scrollbar-thumb,
+.fix-inspector__detail::-webkit-scrollbar-thumb,
+.open-orders::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.depth-ladder__asks::-webkit-scrollbar-thumb:hover,
+.depth-ladder__bids::-webkit-scrollbar-thumb:hover,
+.trade-tape__rows::-webkit-scrollbar-thumb:hover,
+.fix-inspector__list::-webkit-scrollbar-thumb:hover,
+.fix-inspector__detail::-webkit-scrollbar-thumb:hover,
+.open-orders::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scroll-thumb-hover);
+}
+
+.depth-ladder__asks::-webkit-scrollbar-button,
+.depth-ladder__bids::-webkit-scrollbar-button,
+.trade-tape__rows::-webkit-scrollbar-button,
+.fix-inspector__list::-webkit-scrollbar-button,
+.fix-inspector__detail::-webkit-scrollbar-button,
+.open-orders::-webkit-scrollbar-button {
+    display: none;
+}
+
+.depth-ladder__asks::-webkit-scrollbar-corner,
+.depth-ladder__bids::-webkit-scrollbar-corner,
+.trade-tape__rows::-webkit-scrollbar-corner,
+.fix-inspector__list::-webkit-scrollbar-corner,
+.fix-inspector__detail::-webkit-scrollbar-corner,
+.open-orders::-webkit-scrollbar-corner {
+    background: var(--scroll-track);
 }
 
 /* ---- shell ---------------------------------------------------------------- */
@@ -305,7 +396,7 @@ body {
 
 .badge--live .badge__dot {
     background: var(--live);
-    box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 50%, transparent);
 }
 
 .badge--connecting .badge__dot,
@@ -324,11 +415,11 @@ body {
 
 @keyframes live-pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.5);
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 50%, transparent);
     }
     70%,
     100% {
-        box-shadow: 0 0 0 5px rgba(46, 160, 67, 0);
+        box-shadow: 0 0 0 5px transparent;
     }
 }
 
@@ -343,9 +434,13 @@ body {
 .depth-ladder {
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    flex: 1;
+    /* P8-4: sized to its own content, not a flex share of the panel, so the two
+       fixed-height panes below stay symmetric and the divider stays pinned
+       between them with the depth curve directly beneath (no floating gap). */
+    flex: 0 0 auto;
     font-size: 13px;
+    /* Single source for the pane/row height the two panes size against. */
+    --depth-row-h: 22px;
 }
 
 /* Depth selector: a quiet control, never competing with the bars. */
@@ -398,12 +493,21 @@ body {
 .depth-ladder__bids {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
+    /* P8-4: each side is a bounded, deterministic-height scroll region sized to
+       the selected Depth. --depth-rows is set inline by the component (the
+       selected 8 / 10 / 14); the fallback 10 matches DEFAULT_DEPTH. buildLadder
+       caps each side to that same depth and the server prefix is <=10, so a pane
+       fits its rows exactly and only scrolls if the prefix ever exceeds the
+       selected-depth window (Q8-5). overflow-y keeps it bounded either way, so
+       the flex-end asks pane can never clip its top rows. Both panes reuse the
+       P8-3 shared scrollbar by class, unchanged. */
+    flex: 0 0 auto;
+    height: calc(var(--depth-rows, 10) * var(--depth-row-h));
     overflow-y: auto;
 }
 
 .depth-ladder__asks {
+    /* Underfull asks sit at the bottom so the best ask hugs the divider. */
     justify-content: flex-end;
 }
 
@@ -415,7 +519,10 @@ body {
     grid-template-columns: 1fr auto auto;
     column-gap: 12px;
     align-items: center;
-    height: 22px;
+    /* One source with the pane height so a pane holds exactly --depth-rows rows;
+       fixed basis so rows never shrink under the pane's fixed height. */
+    height: var(--depth-row-h);
+    flex: 0 0 auto;
     padding: 0 8px;
     isolation: isolate;
 }
@@ -470,6 +577,9 @@ body {
 /* Spread / mid / last strip between the two sides. */
 .depth-ladder__divider {
     display: flex;
+    /* P8-4: a block sibling of the two panes, never inside a scroll container,
+       so this spread / mid / last bar stays pinned and scrolls with neither. */
+    flex: 0 0 auto;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
@@ -520,7 +630,7 @@ body {
 }
 
 .depth-curve__hit:hover {
-    fill: rgba(76, 141, 255, 0.08);
+    fill: color-mix(in srgb, var(--focus) 8%, transparent);
 }
 
 /* ---- trade tape (P7-6: time, tick colour, filters, side) ------------------ */
@@ -1107,7 +1217,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: rgba(4, 6, 10, 0.7);
+    background: var(--scrim);
 }
 
 .fix-inspector {

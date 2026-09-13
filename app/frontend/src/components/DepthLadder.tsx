@@ -27,7 +27,7 @@
  * replaced wholesale), and spread, mid, and last are each guarded before formatting.
  */
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 import { cumulate, type CumLevel } from "../depth";
 import { centsToDollars, EMPTY_PRICE, midpointLabel } from "../format";
@@ -147,6 +147,12 @@ export function DepthLadder({ book, lastCents = -1 }: DepthLadderProps) {
     const [depth, setDepth] = useState<number>(DEFAULT_DEPTH);
 
     const { asks, bids } = buildLadder(book.bids, book.asks, depth);
+    // P8-4: each pane is sized to the selected depth via a CSS custom property the
+    // stylesheet multiplies by the row height. buildLadder already caps each side
+    // to `depth`, so a pane holds its rows exactly and scrolls only if the server
+    // prefix ever exceeds that window (Q8-5). The value is a count, not pixels, so
+    // the row height stays single-sourced in terminal.css (--depth-row-h).
+    const paneStyle = { "--depth-rows": depth } as CSSProperties;
     const spread = spreadLabel(book.bestBid, book.bestAsk);
     const mid = midpointLabel(book.bestBid, book.bestAsk);
     const last = lastCents > 0 ? centsToDollars(lastCents) : EMPTY_PRICE;
@@ -178,7 +184,7 @@ export function DepthLadder({ book, lastCents = -1 }: DepthLadderProps) {
                 <span className="depth-ladder__head-cum">Total</span>
             </div>
 
-            <div className="depth-ladder__asks">
+            <div className="depth-ladder__asks" style={paneStyle}>
                 {asks.map((row) => renderRow(row, "ask"))}
             </div>
 
@@ -203,7 +209,7 @@ export function DepthLadder({ book, lastCents = -1 }: DepthLadderProps) {
         </span>
             </div>
 
-            <div className="depth-ladder__bids">
+            <div className="depth-ladder__bids" style={paneStyle}>
                 {bids.map((row) => renderRow(row, "bid"))}
             </div>
         </div>
