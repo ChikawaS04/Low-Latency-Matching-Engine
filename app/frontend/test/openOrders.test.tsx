@@ -114,4 +114,30 @@ describe("<OpenOrders />", () => {
         const priceCell = screen.getByTestId("open-orders-row").querySelector(".open-orders__price");
         expect(priceCell?.textContent).toBe("0.05");
     });
+
+    it("puts the rows in a dedicated scroll body with the header row above them (P8-5)", () => {
+        render(
+            <OpenOrders orders={[makeOrder(1, "OPEN"), makeOrder(2, "OPEN")]} onCancel={vi.fn()} />,
+        );
+
+        // The body is the scroll container: every order row lives inside it.
+        const scroll = screen.getByTestId("open-orders-scroll");
+        const rows = screen.getAllByTestId("open-orders-row");
+        expect(rows).toHaveLength(2);
+        rows.forEach((row) => expect(scroll.contains(row)).toBe(true));
+
+        // Sticky-header contract: the single table's column header is a <thead>
+        // inside that same scroll body, ahead of the rows in document order, so the
+        // CSS pins it to the top while the rows scroll under it. jsdom does not apply
+        // terminal.css, so this locks the DOM contract the sticky / scroll rules key
+        // off, not the computed position.
+        const table = scroll.querySelector("table.open-orders__table");
+        expect(table).not.toBeNull();
+        const thead = table!.querySelector("thead");
+        expect(thead).not.toBeNull();
+        expect(scroll.contains(thead!)).toBe(true);
+        expect(
+            thead!.compareDocumentPosition(rows[0]) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+    });
 });

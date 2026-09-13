@@ -31,6 +31,12 @@
  * offered only on isCancellable rows (OPEN / PARTIALLY_FILLED), passing the row's
  * own clOrdId as origClOrdId. Prices render through centsToDollars; a -1 would
  * surface as EMPTY_PRICE, never a negative.
+ *
+ * P8-5 (layout only): the table is wrapped in a bounded scroll body
+ * (.open-orders__scroll) so the blotter holds a fixed min-height of roughly 4-5
+ * rows instead of collapsing to one, the header row stays sticky, and a long list
+ * scrolls internally rather than pushing the Cancel-by-ID ticket below it down. No
+ * field, testid, or state behaviour changes; the row markup is untouched.
  */
 
 import { isCancellable } from "../state/reducer";
@@ -66,53 +72,55 @@ export function OpenOrders({ orders, onCancel }: OpenOrdersProps) {
 
     return (
         <div className="open-orders">
-            <table className="open-orders__table">
-                <thead>
-                <tr>
-                    <th className="open-orders__col-id">ID</th>
-                    <th className="open-orders__col-time" title="Client-assigned send time">
-                        Sent
-                    </th>
-                    <th className="open-orders__col-side">Side</th>
-                    <th className="open-orders__col-price">Price</th>
-                    <th className="open-orders__col-qty">Filled</th>
-                    <th className="open-orders__col-status">Status</th>
-                    <th className="open-orders__col-action" aria-label="Actions" />
-                </tr>
-                </thead>
-                <tbody>
-                {orders.map((order) => (
-                    <tr
-                        key={order.clOrdId}
-                        className={`open-orders__row open-orders__row--${order.side.toLowerCase()}`}
-                        data-testid="open-orders-row"
-                    >
-                        <td className="open-orders__id">{order.clOrdId}</td>
-                        <td className="open-orders__time" data-testid={`sent-${order.clOrdId}`}>
-                            {formatClockNanos(order.sentAtNanos ?? 0)}
-                        </td>
-                        <td className="open-orders__side">{order.side}</td>
-                        <td className="open-orders__price">{centsToDollars(order.priceCents)}</td>
-                        <td className="open-orders__qty" data-testid={`filled-${order.clOrdId}`}>
-                            {filledOf(order)} / {order.originalQty}
-                        </td>
-                        <td className="open-orders__status">{order.status}</td>
-                        <td className="open-orders__action">
-                            {isCancellable(order.status) ? (
-                                <button
-                                    type="button"
-                                    className="open-orders__cancel"
-                                    data-testid={`cancel-${order.clOrdId}`}
-                                    onClick={() => onCancel(order.clOrdId)}
-                                >
-                                    Cancel
-                                </button>
-                            ) : null}
-                        </td>
+            <div className="open-orders__scroll" data-testid="open-orders-scroll">
+                <table className="open-orders__table">
+                    <thead>
+                    <tr>
+                        <th className="open-orders__col-id">ID</th>
+                        <th className="open-orders__col-time" title="Client-assigned send time">
+                            Sent
+                        </th>
+                        <th className="open-orders__col-side">Side</th>
+                        <th className="open-orders__col-price">Price</th>
+                        <th className="open-orders__col-qty">Filled</th>
+                        <th className="open-orders__col-status">Status</th>
+                        <th className="open-orders__col-action" aria-label="Actions" />
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {orders.map((order) => (
+                        <tr
+                            key={order.clOrdId}
+                            className={`open-orders__row open-orders__row--${order.side.toLowerCase()}`}
+                            data-testid="open-orders-row"
+                        >
+                            <td className="open-orders__id">{order.clOrdId}</td>
+                            <td className="open-orders__time" data-testid={`sent-${order.clOrdId}`}>
+                                {formatClockNanos(order.sentAtNanos ?? 0)}
+                            </td>
+                            <td className="open-orders__side">{order.side}</td>
+                            <td className="open-orders__price">{centsToDollars(order.priceCents)}</td>
+                            <td className="open-orders__qty" data-testid={`filled-${order.clOrdId}`}>
+                                {filledOf(order)} / {order.originalQty}
+                            </td>
+                            <td className="open-orders__status">{order.status}</td>
+                            <td className="open-orders__action">
+                                {isCancellable(order.status) ? (
+                                    <button
+                                        type="button"
+                                        className="open-orders__cancel"
+                                        data-testid={`cancel-${order.clOrdId}`}
+                                        onClick={() => onCancel(order.clOrdId)}
+                                    >
+                                        Cancel
+                                    </button>
+                                ) : null}
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
