@@ -50,7 +50,7 @@ describe("<CancelTicket />", () => {
         fireEvent.click(screen.getByTestId("cancel-ticket-submit"));
 
         expect(onCancel).not.toHaveBeenCalled();
-        expect(screen.getByTestId("cancel-ticket-error").textContent).toMatch(/OrigClOrdID/i);
+        expect(screen.getByTestId("cancel-ticket-error").textContent).toMatch(/Order ID/i);
     });
 
     it("clears the field after a successful cancel", () => {
@@ -74,5 +74,15 @@ describe("<CancelTicket />", () => {
     it("uses plain click handlers, not an HTML form submit", () => {
         const { container } = render(<CancelTicket onCancel={vi.fn()} />);
         expect(container.querySelector("form")).toBeNull();
+    });
+});
+
+describe("<CancelTicket /> FIX annotation cleanup (P8-6)", () => {
+    it("shows the plain Order ID to cancel label and drops the FIX tag chrome", () => {
+        render(<CancelTicket onCancel={vi.fn()} />);
+
+        expect(screen.getByText("Order ID to cancel")).not.toBeNull();
+        expect(screen.queryByText("OrigClOrdID")).toBeNull();
+        expect(screen.queryByText(/Tag 41/)).toBeNull();
     });
 });

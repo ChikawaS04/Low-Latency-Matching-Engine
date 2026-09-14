@@ -8,9 +8,14 @@
  *
  * P7-7 adds ticket affordances WITHOUT changing what it sends (the same NEW
  * frame): bid / mid / ask reference chips, one-cent tick nudges, quantity
- * presets, and an explicit Tag 11 clOrdId field showing the client-assigned id
- * the next NEW will use. Every affordance resolves to integer cents through
- * format.ts; no float touches the price path.
+ * presets, and an Order ID field showing the client-assigned id the next NEW
+ * will use. Every affordance resolves to integer cents through format.ts; no
+ * float touches the price path.
+ *
+ * P8-6 stripped this ticket's FIX teaching annotations (the Tag 44 / 38 / 11
+ * labels, the Primitive-cents helper, and the "auto, client-assigned" caption):
+ * the working ticket shows plain labels and values, and the tag-level view
+ * lives only in the FIX inspector now. Every underlying value is kept.
  *
  * Controlled-price seam. The chips and nudges write the SAME uncontrolled
  * `priceInput` the user types, so there is one source of truth and the P5-4
@@ -226,7 +231,6 @@ export const OrderEntry = forwardRef<OrderEntryHandle, OrderEntryProps>(function
             <div className="order-entry__field">
                 <div className="order-entry__field-head">
                     <span className="order-entry__label">Price</span>
-                    <span className="order-entry__tag">Tag 44</span>
                 </div>
                 <div className="order-entry__price-row">
                     <button
@@ -261,13 +265,11 @@ export const OrderEntry = forwardRef<OrderEntryHandle, OrderEntryProps>(function
                         +
                     </button>
                 </div>
-                <span className="order-entry__primitive">Primitive: 18530L cents</span>
             </div>
 
             <div className="order-entry__field">
                 <div className="order-entry__field-head">
                     <span className="order-entry__label">Qty</span>
-                    <span className="order-entry__tag">Tag 38</span>
                 </div>
                 <input
                     className="order-entry__input"
@@ -297,15 +299,13 @@ export const OrderEntry = forwardRef<OrderEntryHandle, OrderEntryProps>(function
             </div>
 
             <div className="order-entry__clordid" data-testid="order-entry-clordid">
-                <span className="order-entry__label">ClOrdId</span>
-                <span className="order-entry__tag">Tag 11</span>
+                <span className="order-entry__label">Order ID</span>
                 <span
                     className="order-entry__clordid-value"
                     data-testid="order-entry-clordid-value"
                 >
           {clOrdIdPreview !== undefined ? clOrdIdPreview : EMPTY_PRICE}
         </span>
-                <span className="order-entry__clordid-note">auto, client-assigned</span>
             </div>
 
             <button

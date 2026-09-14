@@ -27,7 +27,6 @@ function renderHeader(over: Partial<HeaderProps> = {}) {
         tape: TAPE,
         sessionVolume: 40,
         sessionOpenCents: 15000,
-        msgSeqNum: 7,
         lastFrameNanos: 1_700_000_000_123_456_789,
         connection: "open",
         ...over,
@@ -66,15 +65,6 @@ describe("<Header /> session row", () => {
         renderHeader({ connection: "open" });
         const badge = screen.getByTestId("connection-badge");
         expect(badge.textContent).toContain("Live");
-    });
-
-    it("labels the FIX session identity client-assigned and never as server data", () => {
-        renderHeader({ msgSeqNum: 7 });
-        const id = screen.getByTestId("header-session-id");
-        expect(id.textContent).toContain("client-assigned");
-        expect(screen.getByTestId("header-sender").textContent).toBe("OMS-UI");
-        expect(screen.getByTestId("header-target").textContent).toBe("OMS-ENGINE");
-        expect(screen.getByTestId("header-seqnum").textContent).toBe("7");
     });
 
     it("renders the last-frame time as a wall-clock string", () => {

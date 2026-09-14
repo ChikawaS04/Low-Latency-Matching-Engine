@@ -7,11 +7,12 @@
  * EXEC arrival order): symbol, last, session change, bid, ask, mid, spread in
  * cents and basis points, session volume.
  *
- * Session row: connection state (the reused P5-5 ConnectionBadge), the
- * client-assigned FIX session identity (SenderCompID / TargetCompID / MsgSeqNum),
- * and the time the last frame was received. The three identity fields are
- * client-assigned and labelled as such: the produced FIX subset carries no tag
- * 34/49/56 (P7-0/Q7-4), so none is a value the server sent.
+ * Session row: connection state (the reused P5-5 ConnectionBadge) and the time
+ * the last frame was received. P8-6 removed the FIX session identity strip
+ * (SenderCompID / TargetCompID / MsgSeqNum) and its client-assigned caption from
+ * this working header; that tag-level view lives only in the FIX inspector now.
+ * The client MsgSeqNum counter stays in reducer state and is still incremented;
+ * only its header display is gone.
  *
  * The derivation is a pure exported helper (mirrors P5-2 buildLadder / P5-4
  * validateOrderInput) so it is unit-tested without a DOM. Spread cents/bps and
@@ -25,15 +26,6 @@ import { ConnectionBadge } from "./ConnectionBadge";
 import type { BookState, ConnectionStatus, TapeEntry } from "../state/reducer";
 
 const SYMBOL = "ASML";
-
-/**
- * Client-assigned FIX session identity. Display constants, not wire data: the
- * produced-and-parsed FIX subset emits no SenderCompID (49) or TargetCompID (56)
- * at all (P7-0/Q7-4), so presenting them as server values would be a lie. They
- * are labelled client-assigned in the row.
- */
-const SENDER_COMP_ID = "OMS-UI";
-const TARGET_COMP_ID = "OMS-ENGINE";
 
 export type ChangeDirection = "up" | "down" | "flat" | "none";
 
@@ -139,7 +131,6 @@ export interface HeaderProps {
     readonly tape: readonly TapeEntry[];
     readonly sessionVolume: number;
     readonly sessionOpenCents: number;
-    readonly msgSeqNum: number;
     readonly lastFrameNanos: number;
     readonly connection: ConnectionStatus;
 }
@@ -149,7 +140,6 @@ export function Header({
                            tape,
                            sessionVolume,
                            sessionOpenCents,
-                           msgSeqNum,
                            lastFrameNanos,
                            connection,
                        }: HeaderProps) {
@@ -213,22 +203,6 @@ export function Header({
 
             <div className="header__session">
                 <ConnectionBadge status={connection} />
-
-                <div className="header__session-id" data-testid="header-session-id">
-                    <span className="header__session-tag">client-assigned</span>
-                    <span className="header__session-field">
-            <span className="header__label">SenderCompID</span>
-            <span className="header__session-value" data-testid="header-sender">{SENDER_COMP_ID}</span>
-          </span>
-                    <span className="header__session-field">
-            <span className="header__label">TargetCompID</span>
-            <span className="header__session-value" data-testid="header-target">{TARGET_COMP_ID}</span>
-          </span>
-                    <span className="header__session-field">
-            <span className="header__label">MsgSeqNum</span>
-            <span className="header__session-value" data-testid="header-seqnum">{msgSeqNum}</span>
-          </span>
-                </div>
 
                 <div className="header__metric header__metric--last-frame">
                     <span className="header__label">Last frame</span>

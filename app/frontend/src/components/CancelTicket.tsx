@@ -12,7 +12,9 @@
  * intent via `onCancel(origClOrdId)`, the SAME callback the per-row cancel uses,
  * so App turns both into `send(cancelOrderFrame(nextClOrdId(), origClOrdId))`.
  * One frame-building path; the two cancel routes cannot diverge. It builds no
- * frame and holds no clOrdId generator or socket. OrigClOrdID is FIX Tag 41.
+ * frame and holds no clOrdId generator or socket. The cancelled order id is FIX
+ * Tag 41 on the wire; P8-6 removed that tag annotation from this ticket, which
+ * now shows a plain "Order ID to cancel" label, message, and aria-label.
  */
 
 import { useState } from "react";
@@ -21,7 +23,7 @@ export type CancelValidation =
     | { readonly ok: true; readonly origClOrdId: number }
     | { readonly ok: false; readonly reason: string };
 
-const ID_REASON = "OrigClOrdID must be a positive whole number";
+const ID_REASON = "Order ID must be a positive whole number";
 
 /**
  * Pure validation of the entered OrigClOrdID, exported for direct unit testing
@@ -65,8 +67,7 @@ export function CancelTicket({ onCancel, disabled = false }: CancelTicketProps) 
         <div className="cancel-ticket">
             <div className="cancel-ticket__field">
                 <div className="cancel-ticket__head">
-                    <span className="cancel-ticket__label">OrigClOrdID</span>
-                    <span className="cancel-ticket__tag">Tag 41</span>
+                    <span className="cancel-ticket__label">Order ID to cancel</span>
                 </div>
                 <input
                     className="cancel-ticket__input"
@@ -75,7 +76,7 @@ export function CancelTicket({ onCancel, disabled = false }: CancelTicketProps) 
                     placeholder="0"
                     value={idInput}
                     data-testid="cancel-ticket-input"
-                    aria-label="OrigClOrdID to cancel"
+                    aria-label="Order ID to cancel"
                     disabled={disabled}
                     onChange={(e) => setIdInput(e.target.value)}
                 />

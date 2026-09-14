@@ -212,3 +212,23 @@ describe("<OrderEntry /> clOrdId field and price seam (P7-7)", () => {
         expect(price().value).toBe("150.25");
     });
 });
+
+describe("<OrderEntry /> FIX annotation cleanup (P8-6)", () => {
+    it("shows the plain Order ID label and keeps the auto-assigned id value", () => {
+        render(<OrderEntry onSubmit={vi.fn()} clOrdIdPreview={1757000000123} />);
+
+        expect(screen.getByText("Order ID")).not.toBeNull();
+        expect(screen.getByTestId("order-entry-clordid-value").textContent).toBe("1757000000123");
+    });
+
+    it("drops the tag numbers, the Primitive helper, and the client-assigned caption", () => {
+        render(<OrderEntry onSubmit={vi.fn()} clOrdIdPreview={1757000000123} />);
+
+        expect(screen.queryByText("ClOrdId")).toBeNull();
+        expect(screen.queryByText(/Tag 11/)).toBeNull();
+        expect(screen.queryByText(/Tag 44/)).toBeNull();
+        expect(screen.queryByText(/Tag 38/)).toBeNull();
+        expect(screen.queryByText(/Primitive/)).toBeNull();
+        expect(screen.queryByText(/client-assigned/i)).toBeNull();
+    });
+});

@@ -74,7 +74,6 @@ export default function App() {
                     tape={state.tape}
                     sessionVolume={state.sessionVolume}
                     sessionOpenCents={state.sessionOpenCents}
-                    msgSeqNum={state.msgSeqNum}
                     lastFrameNanos={state.lastFrameNanos}
                     connection={state.connection}
                 />
