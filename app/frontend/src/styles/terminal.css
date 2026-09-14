@@ -1,9 +1,10 @@
 /*
  * OMS trading terminal theme (P5-5, header reworked P7-3, depth ladder P7-4,
  * trade tape P7-6, order entry P7-7, blotter P7-8, FIX inspector modal P7-9,
- * depth curve wired P7-10, colour system reworked to Palette A neutral
- * charcoal P8-2, themed scrollbars P8-3, two-pane depth ladder P8-4,
- * blotter sizing P8-5).
+ * depth curve wired P7-10, typographic system (IBM Plex) P8-1, colour system
+ * reworked to Palette A neutral charcoal P8-2, themed scrollbars P8-3, two-pane
+ * depth ladder P8-4, blotter sizing P8-5, orphaned-rule cleanup P8-7,
+ * page-scroll layout P8-8).
  *
  * Subject: a live limit-order-book terminal for one instrument (ASML), built as
  * a low-latency-systems portfolio piece; the reader is an engineer. The one bold
@@ -78,7 +79,6 @@ body {
 
 /* All numeric values share one monospace, tabular treatment so columns lock. */
 .header__value,
-.header__session-value,
 .depth-ladder,
 .trade-tape,
 .order-entry__input,
@@ -192,8 +192,11 @@ body {
     grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr) minmax(280px, 1.2fr);
     gap: var(--gap);
     padding: var(--gap);
-    flex: 1;
-    min-height: 0;
+    /* P8-8: page-scroll model. Dropped the viewport lock (was flex: 1;
+       min-height: 0). Each column sizes to its own content and top-aligns, and
+       the page scrolls to the tallest column instead of each panel clipping or
+       spilling inside a one-screen cell. */
+    align-items: start;
 }
 
 .panel {
@@ -206,9 +209,11 @@ body {
     padding: 12px;
 }
 
-.panel--ladder {
-    overflow: hidden;
-}
+/* P8-8: .panel--ladder no longer clips. The old `overflow: hidden` was cutting
+   off the depth curve (and the bottom of the bids pane at Depth 10/14) whenever
+   the content-sized ladder plus the curve exceeded the one-screen cell. In the
+   page-scroll model the ladder panel sizes to its content and the page scrolls,
+   so nothing is clipped. */
 
 .panel__title {
     margin: 0 0 8px;
@@ -320,7 +325,9 @@ body {
     color: var(--ask);
 }
 
-/* Session row: connection, client-assigned FIX identity, last-frame clock. */
+/* Session row: the connection badge and the last-frame clock. The FIX session
+   identity strip (SenderCompID / TargetCompID / MsgSeqNum) and its rules were
+   removed from the markup in P8-6 and dropped from this file in P8-7. */
 .header__session {
     display: flex;
     align-items: center;
@@ -328,37 +335,6 @@ body {
     gap: 16px;
     padding-top: 8px;
     border-top: 1px solid var(--line);
-}
-
-.header__session-id {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    min-width: 0;
-}
-
-/* Makes the client-side origin unmistakable: these are not server FIX tags. */
-.header__session-tag {
-    padding: 2px 7px;
-    border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    background: var(--surface-2);
-    font-family: var(--sans);
-    font-size: 9px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-}
-
-.header__session-field {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 5px;
-}
-
-.header__session-value {
-    font-size: 12px;
-    color: var(--text);
 }
 
 .header__metric--last-frame {
@@ -496,16 +472,17 @@ body {
 .depth-ladder__bids {
     display: flex;
     flex-direction: column;
-    /* P8-4: each side is a bounded, deterministic-height scroll region sized to
-       the selected Depth. --depth-rows is set inline by the component (the
-       selected 8 / 10 / 14); the fallback 10 matches DEFAULT_DEPTH. buildLadder
-       caps each side to that same depth and the server prefix is <=10, so a pane
-       fits its rows exactly and only scrolls if the prefix ever exceeds the
-       selected-depth window (Q8-5). overflow-y keeps it bounded either way, so
-       the flex-end asks pane can never clip its top rows. Both panes reuse the
+    /* P8-4 sized each side to the selected Depth; P8-8 makes that a max-height
+       (was a fixed height) in the page-scroll model, so a side with fewer levels
+       than the selected Depth sizes to its own rows with no empty gap, while a
+       side at or over the Depth still caps at the selected-Depth window.
+       --depth-rows is set inline by the component (8 / 10 / 14); the fallback 10
+       matches DEFAULT_DEPTH. buildLadder caps rendered rows to the Depth, so a
+       side fits its window and shows no scrollbar; overflow-y stays as the
+       bounded valve if the server prefix ever exceeds it. Both panes reuse the
        P8-3 shared scrollbar by class, unchanged. */
     flex: 0 0 auto;
-    height: calc(var(--depth-rows, 10) * var(--depth-row-h));
+    max-height: calc(var(--depth-rows, 10) * var(--depth-row-h));
     overflow-y: auto;
 }
 
@@ -642,7 +619,13 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    flex: 1;
+    /* P8-8: bounded height for the page-scroll model (was flex: 1, which
+       collapsed to nothing once the column is no longer stretched to the
+       viewport). min-height keeps the empty "No trades yet" panel present;
+       max-height caps a busy tape so its rows scroll internally
+       (.trade-tape__rows) rather than stretching the page. Both are tunable. */
+    min-height: 240px;
+    max-height: 60vh;
     font-size: 13px;
 }
 
@@ -874,20 +857,12 @@ body {
     color: var(--ask);
 }
 
-/* Field head: label plus its FIX tag caption. */
+/* Field head: holds the field label (the FIX tag caption was removed in P8-6). */
 .order-entry__field-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 6px;
-}
-
-.order-entry__tag {
-    font-family: var(--sans);
-    font-size: 9px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--text-faint);
 }
 
 /* Price row: nudge, input, nudge. The input keeps its own class and behaviour. */
@@ -917,13 +892,6 @@ body {
 .order-entry__nudge:disabled {
     opacity: 0.45;
     cursor: not-allowed;
-}
-
-/* The integer-cents primitive, shown so the storage decision is visible. */
-.order-entry__primitive {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-faint);
 }
 
 /* Quantity presets: quick-fill an empty size. */
@@ -981,7 +949,7 @@ body {
     color: var(--text-faint);
 }
 
-/* Explicit client-assigned ClOrdId (Tag 11): the id the next NEW will use. */
+/* Client-assigned Order ID: the id the next NEW will use. */
 .order-entry__clordid {
     grid-column: 1 / -1;
     display: flex;
@@ -1000,14 +968,6 @@ body {
     font-size: 13px;
     font-weight: 600;
     color: var(--text);
-}
-
-.order-entry__clordid-note {
-    font-family: var(--sans);
-    font-size: 9px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--text-faint);
 }
 
 .order-entry__submit {
@@ -1068,14 +1028,6 @@ body {
 .cancel-ticket__label {
     font-size: 10px;
     color: var(--text-dim);
-}
-
-.cancel-ticket__tag {
-    font-family: var(--sans);
-    font-size: 9px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--text-faint);
 }
 
 .cancel-ticket__input {
