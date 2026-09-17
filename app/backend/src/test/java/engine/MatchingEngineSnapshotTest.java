@@ -89,17 +89,19 @@ class MatchingEngineSnapshotTest {
 
     @Test
     void moreThanMaxLevels_truncatesToTopN() {
-        // 12 distinct bid levels 10000..10011, all buys (no asks, no cross)
-        for (int i = 0; i < 12; i++) {
+        // MAX_DEPTH_LEVELS + 2 distinct bid levels 10000..10021, all buys (no asks, no cross),
+        // so the walk must truncate to the top MAX_DEPTH_LEVELS and drop the two lowest.
+        for (int i = 0; i < BookSnapshotEvent.MAX_DEPTH_LEVELS + 2; i++) {
             engine.addOrder(order(i + 1, Side.BUY, 5, 10000L + i));
         }
 
-        engine.snapshotInto(snap, BookSnapshotEvent.MAX_DEPTH_LEVELS);   // capacity 10
+        engine.snapshotInto(snap, BookSnapshotEvent.MAX_DEPTH_LEVELS);   // capacity 20
 
         assertEquals(BookSnapshotEvent.MAX_DEPTH_LEVELS, snap.bidLevelCount);
-        assertEquals(10011L, snap.bidPrices[0]);            // highest kept
-        assertEquals(10002L, snap.bidPrices[9]);            // 10th-highest; 10001 & 10000 dropped
-        assertEquals(10011L, snap.bestBid);                 // top of book unaffected by truncation
+        assertEquals(10021L, snap.bidPrices[0]);            // highest kept
+        assertEquals(10002L, snap.bidPrices[BookSnapshotEvent.MAX_DEPTH_LEVELS - 1]);
+        // 20th-highest; 10001 & 10000 dropped
+        assertEquals(10021L, snap.bestBid);                 // top of book unaffected by truncation
     }
 
     @Test

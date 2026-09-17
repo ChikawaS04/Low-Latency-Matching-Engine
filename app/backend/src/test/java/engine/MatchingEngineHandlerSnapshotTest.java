@@ -190,16 +190,19 @@ class MatchingEngineHandlerSnapshotTest {
 
     @Test
     void depthTruncatesAtMaxLevels() {
-        for (int i = 0; i < 12; i++) {
+        // MAX_DEPTH_LEVELS + 2 distinct bid levels, so the final snapshot must truncate to the
+        // top MAX_DEPTH_LEVELS and leave the top of book unaffected.
+        final int levels = BookSnapshotEvent.MAX_DEPTH_LEVELS + 2;
+        for (int i = 0; i < levels; i++) {
             submit(newOrder(i + 1, Side.BUY, 10000 + i, 5), i);
         }
 
-        List<Observed> obs = snaps.awaitAtLeast(12, 1000);
-        Observed s = obs.get(11);
+        List<Observed> obs = snaps.awaitAtLeast(levels, 1000);
+        Observed s = obs.get(levels - 1);
 
         assertEquals(BookSnapshotEvent.MAX_DEPTH_LEVELS, s.bidLevelCount());
-        assertEquals(10011L, s.bidPrices()[0]);         // best kept
-        assertEquals(10011L, s.bestBid());              // top of book unaffected by truncation
+        assertEquals(10000L + levels - 1, s.bidPrices()[0]);   // best kept (highest price)
+        assertEquals(10000L + levels - 1, s.bestBid());        // top of book unaffected by truncation
     }
 
     @Test

@@ -29,9 +29,11 @@ describe("buildLadder (pure)", () => {
         // bids highest-first: 15000 (cum 10), 14990 (cum 14)
         expect(m.bids.map((r) => r.priceCents)).toEqual([15000, 14990]);
         expect(m.bids.map((r) => r.cumQty)).toEqual([10, 14]);
-        // asks accumulate lowest-first (5, then 8) but display highest-first
-        expect(m.asks.map((r) => r.priceCents)).toEqual([15050, 15025]);
-        expect(m.asks.map((r) => r.cumQty)).toEqual([8, 5]);
+        // P9-2: asks are returned touch-first (lowest-first): 15025 (cum 5), 15050
+        // (cum 8). CSS column-reverse paints them highest-on-top at render; the model
+        // is touch-first so cumQty rises down the array, same as the bids.
+        expect(m.asks.map((r) => r.priceCents)).toEqual([15025, 15050]);
+        expect(m.asks.map((r) => r.cumQty)).toEqual([5, 8]);
     });
 
     it("scales both sides to the shared max (imbalance is visible)", () => {
@@ -39,18 +41,20 @@ describe("buildLadder (pure)", () => {
         const m = buildLadder(BIDS, ASKS);
         const bidWidths = m.bids.map((r) => r.widthPct);
         expect(bidWidths[bidWidths.length - 1]).toBe(100); // furthest bid = full
-        expect(m.asks[0].widthPct).toBeCloseTo((8 / 14) * 100); // furthest ask < full
+        // furthest ask is the LAST element now (touch-first order): cum 8 of shared 14
+        expect(m.asks[m.asks.length - 1].widthPct).toBeCloseTo((8 / 14) * 100);
+        // best ask (nearest the touch) is lighter
+        expect(m.asks[0].widthPct).toBeCloseTo((5 / 14) * 100);
     });
 
-    it("bar width grows monotonically outward from the mid", () => {
+    it("bar width grows monotonically outward from the mid on both sides", () => {
         const m = buildLadder(BIDS, ASKS);
-        // bids display nearest-mid first -> width increases down the list
+        // both sides are touch-first, so width rises down each returned array
         expect(m.bids[0].widthPct).toBeLessThanOrEqual(m.bids[1].widthPct);
-        // asks display furthest first -> width decreases down the list
-        expect(m.asks[0].widthPct).toBeGreaterThanOrEqual(m.asks[1].widthPct);
+        expect(m.asks[0].widthPct).toBeLessThanOrEqual(m.asks[1].widthPct);
     });
 
-    it("preserves display ordering: both sides highest-price-first", () => {
+    it("returns both sides touch-first: bids highest-first, asks lowest-first", () => {
         const m = buildLadder(
             [
                 [15000, 10],
@@ -63,8 +67,8 @@ describe("buildLadder (pure)", () => {
                 [15075, 1],
             ],
         );
-        expect(m.asks.map((r) => r.priceCents)).toEqual([15075, 15050, 15025]);
         expect(m.bids.map((r) => r.priceCents)).toEqual([15000, 14990, 14980]);
+        expect(m.asks.map((r) => r.priceCents)).toEqual([15025, 15050, 15075]);
     });
 
     it("handles an empty book without NaN", () => {
@@ -76,7 +80,8 @@ describe("buildLadder (pure)", () => {
     it("handles a one-sided book (present side scales to its own max)", () => {
         const asksOnly = buildLadder([], ASKS);
         expect(asksOnly.bids).toEqual([]);
-        expect(asksOnly.asks[0].widthPct).toBe(100); // furthest ask, cum 8 / max 8
+        // furthest ask is the last element (touch-first): cum 8 / max 8
+        expect(asksOnly.asks[asksOnly.asks.length - 1].widthPct).toBe(100);
 
         const bidsOnly = buildLadder([[15000, 10]], []);
         expect(bidsOnly.asks).toEqual([]);
@@ -84,8 +89,8 @@ describe("buildLadder (pure)", () => {
     });
 });
 
-describe("buildLadder (P7-4 depth window and shading)", () => {
-    it("caps each side to the selected depth, keeping the best levels nearest the mid", () => {
+describe("buildLadder (P9-2 full-book render and shared-max shading)", () => {
+    it("renders every level the book carries, with no depth cap", () => {
         const bids: Level[] = [
             [15000, 5],
             [14990, 5],
@@ -98,9 +103,20 @@ describe("buildLadder (P7-4 depth window and shading)", () => {
             [15075, 5],
             [15100, 5],
         ];
-        const m = buildLadder(bids, asks, 2);
-        expect(m.bids.map((r) => r.priceCents)).toEqual([15000, 14990]); // best two bids
-        expect(m.asks.map((r) => r.priceCents)).toEqual([15050, 15025]); // best two asks, display order
+        const m = buildLadder(bids, asks);
+        expect(m.bids.map((r) => r.priceCents)).toEqual([15000, 14990, 14980, 14970]);
+        // touch-first (lowest-first); column-reverse paints highest-on-top at render
+        expect(m.asks.map((r) => r.priceCents)).toEqual([15025, 15050, 15075, 15100]);
+    });
+
+    it("renders a book deeper than the pre-P9 10-level cap in full", () => {
+        // 20 levels per side is the new server top-N (P9-1); the ladder must render
+        // all of them and let the pane scroll (P9-2), where before it stopped at 10.
+        const deepBids: Level[] = Array.from({ length: 20 }, (_, i): Level => [15000 - i * 10, 1]);
+        const m = buildLadder(deepBids, []);
+        expect(m.bids).toHaveLength(20);
+        expect(m.bids[0].priceCents).toBe(15000); // best bid first (touch-first)
+        expect(m.bids[m.bids.length - 1].cumQty).toBe(20); // full-book cumulation
     });
 
     it("cumulative quantity is monotonic from the touch outward on each side", () => {
@@ -116,24 +132,22 @@ describe("buildLadder (P7-4 depth window and shading)", () => {
         ];
         const m = buildLadder(bids, asks);
 
-        // bids display best-first, so cumulation runs down the list
+        // both sides are touch-first, so cumulation runs down each array and rises
         const bidCum = m.bids.map((r) => r.cumQty);
         expect(bidCum).toEqual([3, 4, 8]);
         for (let i = 1; i < bidCum.length; i++) {
             expect(bidCum[i]).toBeGreaterThanOrEqual(bidCum[i - 1]);
         }
 
-        // asks accumulate from the touch (lowest) then display furthest-first, so the
-        // cumulative total decreases down the displayed list and rises back to the touch
         const askCum = m.asks.map((r) => r.cumQty);
-        expect(askCum).toEqual([9, 8, 2]);
+        expect(askCum).toEqual([2, 8, 9]);
         for (let i = 1; i < askCum.length; i++) {
-            expect(askCum[i]).toBeLessThanOrEqual(askCum[i - 1]);
+            expect(askCum[i]).toBeGreaterThanOrEqual(askCum[i - 1]);
         }
     });
 
     it("bounds every shading fraction to [0,1], saturating the heavy side at exactly 1", () => {
-        const m = buildLadder(BIDS, ASKS, 10);
+        const m = buildLadder(BIDS, ASKS);
         for (const r of [...m.bids, ...m.asks]) {
             expect(r.shadeFraction).toBeGreaterThanOrEqual(0);
             expect(r.shadeFraction).toBeLessThanOrEqual(1);
@@ -141,7 +155,7 @@ describe("buildLadder (P7-4 depth window and shading)", () => {
         expect(m.bids[m.bids.length - 1].shadeFraction).toBe(1); // furthest bid, heaviest side
     });
 
-    it("normalises shading to the largest cumulative value in the VISIBLE window", () => {
+    it("normalises shading to the largest cumulative value across the FULL book", () => {
         const bids: Level[] = [
             [15000, 1],
             [14990, 1],
@@ -152,17 +166,12 @@ describe("buildLadder (P7-4 depth window and shading)", () => {
             [15050, 1],
         ];
 
-        // full depth: the 100-lot bid dominates, so asks read as slivers
-        const full = buildLadder(bids, asks);
-        expect(full.bids[full.bids.length - 1].shadeFraction).toBe(1);
-        expect(full.asks[0].shadeFraction).toBeCloseTo(2 / 102);
-
-        // depth 2 drops the 100-lot level: the visible bid total (2) matches the ask
-        // total (2), so both sides rescale entirely off the smaller visible window
-        const shallow = buildLadder(bids, asks, 2);
-        expect(shallow.bids.map((r) => r.priceCents)).toEqual([15000, 14990]);
-        expect(shallow.bids[shallow.bids.length - 1].shadeFraction).toBe(1);
-        expect(shallow.asks[0].shadeFraction).toBe(1);
+        // the 100-lot deep bid dominates the shared max (102), so asks read as slivers;
+        // there is no longer a visible window that could rescale this away (P9-2).
+        const m = buildLadder(bids, asks);
+        expect(m.bids[m.bids.length - 1].shadeFraction).toBe(1);
+        expect(m.asks[0].shadeFraction).toBeCloseTo(1 / 102); // best ask, cum 1
+        expect(m.asks[m.asks.length - 1].shadeFraction).toBeCloseTo(2 / 102); // furthest ask, cum 2
     });
 
     it("an empty or one-sided book yields zero shading with no NaN", () => {
@@ -175,36 +184,19 @@ describe("buildLadder (P7-4 depth window and shading)", () => {
             expect(Number.isNaN(r.shadeFraction)).toBe(false);
             expect(Number.isNaN(r.widthPct)).toBe(false);
         }
-        expect(asksOnly.asks[0].shadeFraction).toBe(1); // present side scales to its own max
+        // present side scales to its own max: furthest ask saturates at 1
+        expect(asksOnly.asks[asksOnly.asks.length - 1].shadeFraction).toBe(1);
     });
 
     it("emits exactly one row per real level and never a stale tail", () => {
-        expect(buildLadder([[15000, 1]], [], 14).bids).toHaveLength(1);
-        expect(buildLadder([], [], 14).bids).toHaveLength(0);
+        expect(buildLadder([[15000, 1]], []).bids).toHaveLength(1);
+        expect(buildLadder([], []).bids).toHaveLength(0);
 
         // BOOK is authoritative and replaced wholesale, so a shrunk input shrinks the model
-        const wide = buildLadder([[15000, 1], [14990, 1], [14980, 1]], [], 14);
-        const narrow = buildLadder([[15000, 1]], [], 14);
+        const wide = buildLadder([[15000, 1], [14990, 1], [14980, 1]], []);
+        const narrow = buildLadder([[15000, 1]], []);
         expect(wide.bids).toHaveLength(3);
         expect(narrow.bids).toHaveLength(1);
-    });
-
-    it("re-slices purely over the same snapshot when depth changes (no refetch)", () => {
-        const bids: Level[] = [
-            [15000, 1],
-            [14990, 1],
-            [14980, 1],
-            [14970, 1],
-        ];
-        const asks: Level[] = [
-            [15025, 1],
-            [15050, 1],
-            [15060, 1],
-            [15070, 1],
-        ];
-        expect(buildLadder(bids, asks, 8).bids).toHaveLength(4); // depth exceeds the window
-        expect(buildLadder(bids, asks, 2).bids).toHaveLength(2);
-        expect(buildLadder(bids, asks, 2).asks.map((r) => r.priceCents)).toEqual([15050, 15025]);
     });
 });
 
@@ -231,13 +223,16 @@ describe("DepthLadder (render)", () => {
         expect(screen.queryByText("150.00")).not.toBeNull();
     });
 
-    it("orders asks highest-first and bids highest-first in the DOM", () => {
+    it("emits asks touch-first and bids touch-first in the DOM (CSS paints asks bottom-up)", () => {
         render(
             <DepthLadder book={book({ bestBid: 15000, bestAsk: 15025, bids: BIDS, asks: ASKS })} />,
         );
+        // P9-2: DOM order is best-first on both sides. The asks pane's CSS
+        // column-reverse paints the best ask at the bottom near the divider; jsdom
+        // applies no layout, so we assert DOM order and verify the visual live (P9-3).
         const askRows = screen.getAllByTestId("ask-row");
-        expect(askRows[0].textContent).toContain("150.50"); // top = highest ask
-        expect(askRows[askRows.length - 1].textContent).toContain("150.25"); // best ask nearest mid
+        expect(askRows[0].textContent).toContain("150.25"); // best ask, first in DOM
+        expect(askRows[askRows.length - 1].textContent).toContain("150.50"); // deepest ask
 
         const bidRows = screen.getAllByTestId("bid-row");
         expect(bidRows[0].textContent).toContain("150.00"); // best bid nearest mid
@@ -283,7 +278,7 @@ describe("DepthLadder (render)", () => {
     });
 });
 
-describe("DepthLadder (P7-4 cumulative column, divider, depth selector)", () => {
+describe("DepthLadder (cumulative column, divider, depth viewport)", () => {
     it("renders the cumulative-quantity column alongside per-level size", () => {
         render(
             <DepthLadder book={book({ bestBid: 15000, bestAsk: 15025, bids: BIDS, asks: ASKS })} />,
@@ -320,7 +315,7 @@ describe("DepthLadder (P7-4 cumulative column, divider, depth selector)", () => 
         expect(screen.getByTestId("mid-value").textContent).toBe("150.125"); // mid still live from the book
     });
 
-    it("re-slices to the selected depth without a new book prop (no refetch)", () => {
+    it("sizes the viewport to the selected depth without changing how many rows render (P9-2)", () => {
         const wideBook = book({
             bestBid: 15000,
             bestAsk: 15025,
@@ -340,11 +335,16 @@ describe("DepthLadder (P7-4 cumulative column, divider, depth selector)", () => 
             ],
             asks: [[15025, 1]],
         });
-        render(<DepthLadder book={wideBook} />);
-        expect(screen.getAllByTestId("bid-row")).toHaveLength(10); // default depth 10
+        const { container } = render(<DepthLadder book={wideBook} />);
+        const bidsPane = () => container.querySelector(".depth-ladder__bids") as HTMLElement;
+
+        // the full book renders regardless of the selector; the selector sizes the pane
+        expect(screen.getAllByTestId("bid-row")).toHaveLength(12);
+        expect(bidsPane().style.getPropertyValue("--depth-rows")).toBe("10"); // default depth
 
         fireEvent.change(screen.getByTestId("depth-select"), { target: { value: "8" } });
-        expect(screen.getAllByTestId("bid-row")).toHaveLength(8); // same book, selector alone re-slices
+        expect(screen.getAllByTestId("bid-row")).toHaveLength(12); // same rows, deeper than the viewport
+        expect(bidsPane().style.getPropertyValue("--depth-rows")).toBe("8"); // viewport shrank
     });
 
     it("never shows a stale tail when the book shrinks", () => {

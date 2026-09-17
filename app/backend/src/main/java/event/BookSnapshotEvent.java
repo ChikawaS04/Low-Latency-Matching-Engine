@@ -17,8 +17,19 @@ package event;
  */
 public final class BookSnapshotEvent {
 
-    /** Maximum depth levels retained per side. Sizes every array below. */
-    public static final int MAX_DEPTH_LEVELS = 10;
+    /**
+     * Maximum depth levels retained per side. Sizes every array below and is the clamp in
+     * {@link engine.MatchingEngine#snapshotInto}.
+     *
+     * <p>P9-1 raised this from 10 to 20. The 10-level prefix (P4-6) capped the wire below the
+     * depth the UI can show: the ladder's Depth selector offers up to 14 levels per side, so a
+     * ≤10 prefix made 14 (and even 10, on a deeper book) unreachable, and left the themed
+     * depth-pane scrollbar with nothing to scroll. The value stays a fixed bound so the carrier
+     * remains zero-allocation across reuse (fixed-size arrays, no per-snapshot growth); it must
+     * stay strictly greater than the largest Depth option (14) for the scrolling viewport to
+     * engage. 20 longs × 4 arrays is ~640 B, negligible at demo volume.
+     */
+    public static final int MAX_DEPTH_LEVELS = 20;
 
     /** Bid side, best (highest) first. Valid range: [0, bidLevelCount). */
     public final long[] bidPrices = new long[MAX_DEPTH_LEVELS];

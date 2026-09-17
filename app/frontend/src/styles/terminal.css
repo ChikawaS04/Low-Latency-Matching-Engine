@@ -472,23 +472,35 @@ body {
 .depth-ladder__bids {
     display: flex;
     flex-direction: column;
-    /* P8-4 sized each side to the selected Depth; P8-8 makes that a max-height
-       (was a fixed height) in the page-scroll model, so a side with fewer levels
-       than the selected Depth sizes to its own rows with no empty gap, while a
-       side at or over the Depth still caps at the selected-Depth window.
-       --depth-rows is set inline by the component (8 / 10 / 14); the fallback 10
-       matches DEFAULT_DEPTH. buildLadder caps rendered rows to the Depth, so a
-       side fits its window and shows no scrollbar; overflow-y stays as the
-       bounded valve if the server prefix ever exceeds it. Both panes reuse the
-       P8-3 shared scrollbar by class, unchanged. */
+    /* P9-2: Depth is now a true scrolling VIEWPORT, not a cap. buildLadder renders
+       the full server book (up to MAX_DEPTH_LEVELS = 20 per side, P9-1), so a side
+       deeper than the selected Depth overflows this pane and finally engages the
+       P8-3 shared scrollbar; a shallower side still sizes to its own rows with no
+       empty gap. Height is the selected Depth expressed in rows: --depth-rows is set
+       inline by the component (8 / 10 / 14), the fallback 10 matches DEFAULT_DEPTH,
+       multiplied by the single row-height source --depth-row-h. scrollbar-gutter:
+       stable reserves the 8px bar on BOTH panes whether or not each one overflows, so
+       the asks and bids price columns stay aligned and do not jitter as the live book
+       crosses the viewport height. Both panes reuse the P8-3 shared scrollbar by
+       class, unchanged. */
     flex: 0 0 auto;
     max-height: calc(var(--depth-rows, 10) * var(--depth-row-h));
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .depth-ladder__asks {
-    /* Underfull asks sit at the bottom so the best ask hugs the divider. */
-    justify-content: flex-end;
+    /* P9-2: asks fill from the divider upward. column-reverse (over the touch-first
+       DOM order buildLadder now emits) paints the best ask at the bottom and deeper
+       asks above it, so the visual is unchanged from P8-4. It also does the two things
+       plain flex-end could not once the pane overflows: it defaults the scroll to the
+       bottom so the touch stays in view, and it sticks to the bottom as the live book
+       updates while scroll-up stays reachable (the flex-end + overflow trap the Phase
+       9 kickoff flagged). Underfull asks still pack against the divider, since the
+       reversed main-start is the bottom edge. The bids pane needs none of this: its
+       touch is the top row, so the default column with its scroll at the top already
+       keeps the best bid in view. */
+    flex-direction: column-reverse;
 }
 
 /* Three tracks: price (grows), size, cumulative total (both right-aligned). The
