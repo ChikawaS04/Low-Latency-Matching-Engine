@@ -162,7 +162,7 @@ class WebSocketPublisherTest {
         assertEquals(7L, n.get("timestamp").asLong());
 
         JsonNode bids = n.get("bids");
-        assertEquals(2, bids.size());                       // NOT 10 — only the valid prefix
+        assertEquals(2, bids.size());                       // NOT 20 — only the valid prefix
         assertEquals(15020L, bids.get(0).get(0).asLong());
         assertEquals(50L, bids.get(0).get(1).asLong());
         assertEquals(15010L, bids.get(1).get(0).asLong());

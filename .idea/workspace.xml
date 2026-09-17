@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e1aea6c6-22a5-4fbf-ab3b-b1fb46959b08" name="Changes" comment="feat(frontend): add CancelTicket and OrderEntry affordances (P7-7)&#10;&#10;Add a manual cancel-by-OrigClOrdID ticket (CancelTicket) that shares the&#10;same handleCancel callback path as per-row OpenOrders cancels, so the two&#10;cancel routes cannot diverge. Enhance OrderEntry with bid/mid/ask reference&#10;chips, one-cent tick nudges, round-lot quantity presets, a display-only&#10;clOrdId (Tag 11) preview field, and an imperative forwardRef setPrice seam&#10;for the upcoming P7-10 depth curve integration. App wires live book tops and&#10;nextClOrdId.peek() as display-only props; consumption still happens only at&#10;send. All new logic is covered by unit tests (cancelTicket, clOrdIdGenerator&#10;peek, orderTicket pure logic) and the OrderEntry test suite is extended for&#10;chips, nudges, sets, and the ref handle.">
-      <change afterPath="$PROJECT_DIR$/app/frontend/test/openOrders.logic.test.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/frontend/test/passiveFill.test.ts" afterDir="false" />
+    <list default="true" id="e1aea6c6-22a5-4fbf-ab3b-b1fb46959b08" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/src/components/OpenOrders.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/components/OpenOrders.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/src/state/reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/state/reducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/src/state/useOrderBook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/state/useOrderBook.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/src/styles/terminal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/styles/terminal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/test/openOrders.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/test/openOrders.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/frontend/test/reducer.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/test/reducer.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/benchmark/MatchingEngineSnapshotBenchmark.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/benchmark/MatchingEngineSnapshotBenchmark.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/net/WebSocketRoundTripTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/net/WebSocketRoundTripTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/publisher/WebSocketPublisherTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/publisher/WebSocketPublisherTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="69" />
+    <option name="cachedIndexableFilesCount" value="70" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -52,6 +47,65 @@
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.3967518874136398" />
+      <entry key="MS500" value="4.206695596513202" />
+      <entry key="S2" value="12.683683197152298" />
+      <entry key="S5" value="23.392316739802745" />
+      <entry key="S10" value="31.657839031223435" />
+      <entry key="S30" value="40.263724896640625" />
+      <entry key="S60" value="42.98844718666791" />
+      <entry key="M2" value="44.54196403206145" />
+      <entry key="M5" value="52.39036348539173" />
+      <entry key="M10" value="81.30982121504306" />
+      <entry key="M15" value="108.65131900213575" />
+      <entry key="M30" value="159.4346131952449" />
+      <entry key="H1" value="200.53029687987976" />
+      <entry key="H2" value="227.15523260169536" />
+      <entry key="H4" value="244.85774532643413" />
+      <entry key="D1" value="423.45766170687034" />
+      <entry key="W1" value="650.001446569809" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.3086699854188035" />
+      <entry key="MS500" value="4.159793263820933" />
+      <entry key="S2" value="12.650370453930176" />
+      <entry key="S5" value="23.36779840808438" />
+      <entry key="S10" value="31.64119043482381" />
+      <entry key="S30" value="40.25664133686849" />
+      <entry key="S60" value="42.98466181947906" />
+      <entry key="M2" value="44.54000144877077" />
+      <entry key="M5" value="52.389424741039676" />
+      <entry key="M10" value="81.30904955971077" />
+      <entry key="M15" value="108.65059370670062" />
+      <entry key="M30" value="159.43402741771996" />
+      <entry key="H1" value="200.5299015043151" />
+      <entry key="H2" value="227.1549990783319" />
+      <entry key="H4" value="244.85761646461208" />
+      <entry key="D1" value="423.4576217617206" />
+      <entry key="W1" value="650.0014374653823" />
+    </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0,
@@ -109,8 +163,8 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\ddavi\\AppData\\Roaming\\JetBrains\\IntelliJIdea2026.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2025.1.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -127,7 +181,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Vitest.FIX frame narrowing">
+  <component name="RunManager" selected="JUnit.WebSocketRoundTripTest">
     <configuration name="DefaultConfig" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="25" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -137,31 +191,31 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="EpochNanoClockTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="MatchingEngineHandlerSnapshotTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="OrderBookDemo" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="util.*" />
+          <option name="PATTERN" value="engine.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="util" />
-      <option name="MAIN_CLASS_NAME" value="util.EpochNanoClockTest" />
+      <option name="PACKAGE_NAME" value="engine" />
+      <option name="MAIN_CLASS_NAME" value="engine.MatchingEngineHandlerSnapshotTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="WebSocketFrameHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="MatchingEngineSnapshotTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="OrderBookDemo" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="net.*" />
+          <option name="PATTERN" value="engine.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="net" />
-      <option name="MAIN_CLASS_NAME" value="net.WebSocketFrameHandlerTest" />
+      <option name="PACKAGE_NAME" value="engine" />
+      <option name="MAIN_CLASS_NAME" value="engine.MatchingEngineSnapshotTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -210,21 +264,29 @@
     </configuration>
     <list>
       <item itemvalue="Application.DefaultConfig" />
-      <item itemvalue="JUnit.EpochNanoClockTest" />
-      <item itemvalue="JUnit.WebSocketFrameHandlerTest" />
+      <item itemvalue="JUnit.MatchingEngineHandlerSnapshotTest" />
+      <item itemvalue="JUnit.MatchingEngineSnapshotTest" />
       <item itemvalue="JUnit.WebSocketRoundTripTest" />
       <item itemvalue="JUnit.WebSocketServerTest" />
       <item itemvalue="Vitest.FIX frame narrowing" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.WebSocketRoundTripTest" />
+        <item itemvalue="JUnit.MatchingEngineHandlerSnapshotTest" />
+        <item itemvalue="JUnit.MatchingEngineSnapshotTest" />
         <item itemvalue="Vitest.FIX frame narrowing" />
         <item itemvalue="JUnit.WebSocketServerTest" />
-        <item itemvalue="JUnit.WebSocketRoundTripTest" />
-        <item itemvalue="JUnit.WebSocketFrameHandlerTest" />
-        <item itemvalue="JUnit.EpochNanoClockTest" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.27258.48" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.27258.48" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -277,15 +339,17 @@
       <workItem from="1788909954617" duration="9707000" />
       <workItem from="1788982651131" duration="13127000" />
       <workItem from="1789060372151" duration="708000" />
-      <workItem from="1789082507217" duration="3075000" />
-    </task>
-    <task id="LOCAL-00016" summary="Implemented step 1 of the order gateway:parseLong(byte[] buf, int start, int end). Goal: pure byte-range to long. Foundation for every numeric parse downstream. Walk bytes [start, end). For each: digit = b - '0', reject if outside 0..9, accumulate val = val * 10 + digit.As well as some unit tests">
-      <option name="closed" value="true" />
-      <created>1784777368880</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1784777368880</updated>
+      <workItem from="1789082507217" duration="4564000" />
+      <workItem from="1789154153291" duration="3904000" />
+      <workItem from="1789159554082" duration="44000" />
+      <workItem from="1789165050489" duration="1276000" />
+      <workItem from="1789236623480" duration="3705000" />
+      <workItem from="1789255148007" duration="699000" />
+      <workItem from="1789263191176" duration="2945000" />
+      <workItem from="1789272279653" duration="9367000" />
+      <workItem from="1789408179423" duration="4276000" />
+      <workItem from="1789493408256" duration="643000" />
+      <workItem from="1789585117773" duration="6861000" />
     </task>
     <task id="LOCAL-00017" summary="Add parsePrice for FIX price fields (Step 2)&#10;&#10;Parse a byte-range FIX price to long cents, reusing parseLong for the&#10;integer and fractional parts. Scale the fraction by digit length, not&#10;value: one digit *10, two digits as-is.&#10;&#10;Reject (-1L sentinel, consistent with parseLong) on: empty range, empty&#10;integer part, more than two decimals, non-digit bytes, and non-positive&#10;result. The zero/negative price policy is applied here via the &gt; 0 check,&#10;since parseLong deliberately treats &quot;0&quot; as a valid parse.&#10;&#10;PRICE_SCALE and MAX_DECIMALS kept private to the parser (no second caller).&#10;No String/split/BigDecimal; pure byte[] in, off the hot path.&#10;&#10;Tested: integer-only, one/two decimals, leading zeros, zero-integer-part&#10;with positive fraction, and rejects for &gt;2 decimals, zero, negative, bare&#10;dot, empty integer part, trailing dot, trailing junk, and multiple dots.&#10;Tests embed each price in a wider buffer to verify offset/length bounds.">
       <option name="closed" value="true" />
@@ -671,14 +735,21 @@
       <option name="project" value="LOCAL" />
       <updated>1789083386330</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="feat(frontend): P7-8 order blotter with passive-fill decrement&#10;&#10;Extend OpenOrders into a full blotter (P7-8):&#10;&#10;- MyOrder gains sentAtNanos (client-assigned epoch-nanos send time,&#10;  captured at dispatch in useOrderBook, rendered via formatClockNanos).&#10;  Optional so all existing SENT fixtures compile unchanged.&#10;- SENT action gains sentAtNanos; applySent stores it on NEW rows only.&#10;- passiveFill(order, filledQty): MyOrder exported from reducer.ts:&#10;  decrements remainingQty locally and transitions to PARTIALLY_FILLED or&#10;  FILLED. Terminal guard mirrors nextOrder. Pure, exported, unit-tested.&#10;- applyExec gains the passive branch: on a fill EXEC whose passiveOrderId&#10;  matches an owned clOrdId (guarded &gt;0, != orderId, isFill), passiveFill&#10;  is applied. EXEC stays authoritative for the aggressor; the passive&#10;  decrement is a documented client-side derivation. Slice-identity&#10;  preserved on no-op paths.&#10;- OpenOrders rewritten as a blotter: ID, Sent (client-assigned), Side,&#10;  Price (limit from SENT), Filled (derived originalQty - remainingQty via&#10;  exported filledOf), Status, Cancel. Every P5-4 class, testid, and&#10;  isCancellable cancel gating preserved.&#10;- terminal.css open-orders section extended (col-time, time cell); every&#10;  other section verbatim.&#10;&#10;Tests: passiveFill pure (partial, full, clamp, terminal guard); reducer&#10;integration (passive decrement, -1 NA never matches, terminal not&#10;resurrected, aggressor-then-passive mixed case); openOrders.logic&#10;(filledOf: normal, zero, negative clamp); openOrders.test extended (send&#10;time renders HH:MM:SS.mmm, empty cell without one, filled/total column).&#10;Revised reducer.test passive block to assert the decrement (closes the&#10;gap). Revised openOrders.test row assertion from remaining to filled/total.&#10;&#10;237 tests green. App.tsx, messages.ts, format.ts, encode.ts, backend&#10;untouched. README derivation note deferred to P7-10.">
+      <option name="closed" value="true" />
+      <created>1789100940576</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1789100940576</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="scaffold: add empty frontend module directory structure&#10;&#10;Create folder-and-file skeleton for the React/TypeScript/Vite frontend&#10;module alongside the existing Maven backend. All files are empty stubs&#10;pending content population in subsequent steps." />
     <MESSAGE value="Moved all backend code into backend folder" />
     <MESSAGE value="Phase 5 (P5-0): Vite/React/TS scaffold + cents↔dollars format primitives&#10;&#10;Author the empty frontend/ scaffold so the toolchain boots and land the&#10;price-formatting primitives with tests.&#10;&#10;- package.json: Vite 8 / React 19 / Vitest 4 / TS 5, ESM, dev/build/test scripts&#10;- tsconfig.json (strict, src+test) + standalone tsconfig.node.json for the&#10;  config file; no project references / no composite (avoids the tsc -b footgun)&#10;- vite.config.ts via vitest/config, environment: node (jsdom deferred to P5-2)&#10;- index.html, main.tsx (root guard + StrictMode), App.tsx static shell&#10;- .gitignore (keeps base .env tracked), .env with VITE_WS_URL&#10;- src/format.ts: centsToDollars / dollarsToCents — string-based integer math,&#10;  no float; mirrors backend parsePrice policy (&gt;0, &lt;=2 decimals, -1 -&gt; &quot;—&quot;)&#10;- test/format.test.ts: formatting, sentinel/non-finite, round-trip, all&#10;  reject branches&#10;&#10;Pure logic verified by hand; toolchain to be booted locally (no network in&#10;the authoring env). No later-step files created; backend untouched." />
     <MESSAGE value="feat(frontend): P5-1 protocol types, encoders, reducer, socket hook&#10;&#10;- protocol/messages.ts: BookFrame|ExecFrame and NewOrder|CancelOrder unions,&#10;  ExecType (full Java enum names), parseServerFrame as the single JSON-&gt;typed&#10;  narrowing point (rebuilds the object, so extra fields can't ride along)&#10;- protocol/encode.ts: NEW/CANCEL frame builders (integer cents, symbol ASML) and&#10;  a Date.now()-seeded monotonic clOrdId generator, factory-shaped for tests&#10;- state/reducer.ts: pure over {connection, book, tape, myOrders}. BOOK replaces&#10;  book state wholesale and EXEC never touches it; tape capped at 200 newest-first;&#10;  myOrders keyed by clOrdId, registered at send time (no EXEC carries a side)&#10;- state/useOrderBook.ts: socket lifecycle from VITE_WS_URL, capped backoff&#10;  reconnect (250ms-&gt;4s, reset on open), clears book on drop, StrictMode-safe&#10;- vite-env.d.ts for import.meta.env typing&#10;- tests: protocol.test.ts (narrowing + reject branches + encoders),&#10;  reducer.test.ts (BOOK-replaces-not-merges, tape cap, myOrders lifecycle,&#10;  the Q1 passive-fill gap, connection transitions)&#10;&#10;Q1/Q2 resolved against Phase-4 source: the engine fires one onFill per trade&#10;naming the aggressor and is silent on the passive side, and the handler maps&#10;aggressorOrderId straight into EXEC orderId. Resting orders therefore have no&#10;trackable per-order fill progress; encoded in the reducer as a documented gap." />
@@ -703,6 +774,7 @@
     <MESSAGE value="feat(frontend): P7-6 trade tape time-and-sales (wall clock, tick colour, aggressor side, block filter)&#10;&#10;Rework TradeTape into a proper time-and-sales display using the epoch-ns&#10;timestamp available since P7-1.&#10;&#10;- formatClockNanos (format.ts): renders epoch-ns as local HH:MM:SS.mmm;&#10;  precision toggle extends to full ns (IEEE-754 transport caveat noted).&#10;- Tick colouring: up/green, down/red, flat/neutral against the previous&#10;  visible print; equal prices stay flat (no zero-tick carry). tickDirections&#10;  helper is pure and exported for unit testing.&#10;- Aggressor side: derivable only for own trades (no EXEC frame carries a&#10;  side). aggressorSideFor added to reducer — pure, exported, unit-tested.&#10;  TapeEntry gains optional aggressorSide; tag appears only on mine rows.&#10;- Block-size filter (All / &gt;200 / &gt;500): strict-greater, applied at render&#10;  over the capped newest-first slice; preserves order, no reaccumulation.&#10;- Column header row; precision toggle button (ms ↔ ns).&#10;- terminal.css updated for controls bar, header, side column.&#10;- New test files: tapeSide.test.ts (aggressorSideFor), tradeTape.logic.test.ts&#10;  (passesBlockFilter, tickDirections, formatClockNanos); tradeTape.test.tsx&#10;  and format.test.ts extended." />
     <MESSAGE value="feat(frontend): add CancelTicket and OrderEntry affordances (P7-7)&#10;&#10;Add a manual cancel-by-OrigClOrdID ticket (CancelTicket) that shares the&#10;same handleCancel callback path as per-row OpenOrders cancels, so the two&#10;cancel routes cannot diverge. Enhance OrderEntry with bid/mid/ask reference&#10;chips, one-cent tick nudges, round-lot quantity presets, a display-only&#10;clOrdId (Tag 11) preview field, and an imperative forwardRef setPrice seam&#10;for the upcoming P7-10 depth curve integration. App wires live book tops and&#10;nextClOrdId.peek() as display-only props; consumption still happens only at&#10;send. All new logic is covered by unit tests (cancelTicket, clOrdIdGenerator&#10;peek, orderTicket pure logic) and the OrderEntry test suite is extended for&#10;chips, nudges, presets, and the ref handle." />
     <MESSAGE value="feat(frontend): add CancelTicket and OrderEntry affordances (P7-7)&#10;&#10;Add a manual cancel-by-OrigClOrdID ticket (CancelTicket) that shares the&#10;same handleCancel callback path as per-row OpenOrders cancels, so the two&#10;cancel routes cannot diverge. Enhance OrderEntry with bid/mid/ask reference&#10;chips, one-cent tick nudges, round-lot quantity presets, a display-only&#10;clOrdId (Tag 11) preview field, and an imperative forwardRef setPrice seam&#10;for the upcoming P7-10 depth curve integration. App wires live book tops and&#10;nextClOrdId.peek() as display-only props; consumption still happens only at&#10;send. All new logic is covered by unit tests (cancelTicket, clOrdIdGenerator&#10;peek, orderTicket pure logic) and the OrderEntry test suite is extended for&#10;chips, nudges, sets, and the ref handle." />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(frontend): add CancelTicket and OrderEntry affordances (P7-7)&#10;&#10;Add a manual cancel-by-OrigClOrdID ticket (CancelTicket) that shares the&#10;same handleCancel callback path as per-row OpenOrders cancels, so the two&#10;cancel routes cannot diverge. Enhance OrderEntry with bid/mid/ask reference&#10;chips, one-cent tick nudges, round-lot quantity presets, a display-only&#10;clOrdId (Tag 11) preview field, and an imperative forwardRef setPrice seam&#10;for the upcoming P7-10 depth curve integration. App wires live book tops and&#10;nextClOrdId.peek() as display-only props; consumption still happens only at&#10;send. All new logic is covered by unit tests (cancelTicket, clOrdIdGenerator&#10;peek, orderTicket pure logic) and the OrderEntry test suite is extended for&#10;chips, nudges, sets, and the ref handle." />
+    <MESSAGE value="feat(frontend): P7-8 order blotter with passive-fill decrement&#10;&#10;Extend OpenOrders into a full blotter (P7-8):&#10;&#10;- MyOrder gains sentAtNanos (client-assigned epoch-nanos send time,&#10;  captured at dispatch in useOrderBook, rendered via formatClockNanos).&#10;  Optional so all existing SENT fixtures compile unchanged.&#10;- SENT action gains sentAtNanos; applySent stores it on NEW rows only.&#10;- passiveFill(order, filledQty): MyOrder exported from reducer.ts:&#10;  decrements remainingQty locally and transitions to PARTIALLY_FILLED or&#10;  FILLED. Terminal guard mirrors nextOrder. Pure, exported, unit-tested.&#10;- applyExec gains the passive branch: on a fill EXEC whose passiveOrderId&#10;  matches an owned clOrdId (guarded &gt;0, != orderId, isFill), passiveFill&#10;  is applied. EXEC stays authoritative for the aggressor; the passive&#10;  decrement is a documented client-side derivation. Slice-identity&#10;  preserved on no-op paths.&#10;- OpenOrders rewritten as a blotter: ID, Sent (client-assigned), Side,&#10;  Price (limit from SENT), Filled (derived originalQty - remainingQty via&#10;  exported filledOf), Status, Cancel. Every P5-4 class, testid, and&#10;  isCancellable cancel gating preserved.&#10;- terminal.css open-orders section extended (col-time, time cell); every&#10;  other section verbatim.&#10;&#10;Tests: passiveFill pure (partial, full, clamp, terminal guard); reducer&#10;integration (passive decrement, -1 NA never matches, terminal not&#10;resurrected, aggressor-then-passive mixed case); openOrders.logic&#10;(filledOf: normal, zero, negative clamp); openOrders.test extended (send&#10;time renders HH:MM:SS.mmm, empty cell without one, filled/total column).&#10;Revised reducer.test passive block to assert the decrement (closes the&#10;gap). Revised openOrders.test row assertion from remaining to filled/total.&#10;&#10;237 tests green. App.tsx, messages.ts, format.ts, encode.ts, backend&#10;untouched. README derivation note deferred to P7-10." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(frontend): P7-8 order blotter with passive-fill decrement&#10;&#10;Extend OpenOrders into a full blotter (P7-8):&#10;&#10;- MyOrder gains sentAtNanos (client-assigned epoch-nanos send time,&#10;  captured at dispatch in useOrderBook, rendered via formatClockNanos).&#10;  Optional so all existing SENT fixtures compile unchanged.&#10;- SENT action gains sentAtNanos; applySent stores it on NEW rows only.&#10;- passiveFill(order, filledQty): MyOrder exported from reducer.ts:&#10;  decrements remainingQty locally and transitions to PARTIALLY_FILLED or&#10;  FILLED. Terminal guard mirrors nextOrder. Pure, exported, unit-tested.&#10;- applyExec gains the passive branch: on a fill EXEC whose passiveOrderId&#10;  matches an owned clOrdId (guarded &gt;0, != orderId, isFill), passiveFill&#10;  is applied. EXEC stays authoritative for the aggressor; the passive&#10;  decrement is a documented client-side derivation. Slice-identity&#10;  preserved on no-op paths.&#10;- OpenOrders rewritten as a blotter: ID, Sent (client-assigned), Side,&#10;  Price (limit from SENT), Filled (derived originalQty - remainingQty via&#10;  exported filledOf), Status, Cancel. Every P5-4 class, testid, and&#10;  isCancellable cancel gating preserved.&#10;- terminal.css open-orders section extended (col-time, time cell); every&#10;  other section verbatim.&#10;&#10;Tests: passiveFill pure (partial, full, clamp, terminal guard); reducer&#10;integration (passive decrement, -1 NA never matches, terminal not&#10;resurrected, aggressor-then-passive mixed case); openOrders.logic&#10;(filledOf: normal, zero, negative clamp); openOrders.test extended (send&#10;time renders HH:MM:SS.mmm, empty cell without one, filled/total column).&#10;Revised reducer.test passive block to assert the decrement (closes the&#10;gap). Revised openOrders.test row assertion from remaining to filled/total.&#10;&#10;237 tests green. App.tsx, messages.ts, format.ts, encode.ts, backend&#10;untouched. README derivation note deferred to P7-10." />
   </component>
 </project>

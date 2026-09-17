@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  * <p><b>Target reuse — the production pattern, and why it must be {@code @Setup}.</b> The
  * {@link BookSnapshotEvent} target is pre-allocated once and its arrays are reused every call,
  * exactly as the ring carrier is reused in production. Allocating the target per-invocation would
- * charge four {@code long[MAX_DEPTH_LEVELS]} arrays (~384 B) to the measurement and mask the ~0 B/op
+ * charge four {@code long[MAX_DEPTH_LEVELS]} arrays (~640 B) to the measurement and mask the ~0 B/op
  * signal entirely. Steady-state is the only correct choice.
  *
  * <p><b>Param axis.</b> {@code bookLevels} sweeps distinct price levels <em>per side</em> — the same
