@@ -37,6 +37,30 @@ export function centsToDollars(cents: number): string {
 }
 
 /**
+ * Group a whole-number quantity with thousands separators (P9-Extras).
+ *
+ * For counts and sizes, not prices: session volume and the Filled / Rem header
+ * counters. String-based, integer-only, and locale-independent by design, in the
+ * same spirit as the price formatters here (no float, no toLocaleString), so
+ * "1,000" is deterministic regardless of the runtime's locale and is unit-tested
+ * without pinning one. A count of zero is a real value and renders "0", never the
+ * EMPTY_PRICE sentinel. Input is expected to be a non-negative integer; a negative
+ * or fractional value is truncated toward zero and still grouped rather than
+ * throwing, so a stray call can never crash a render.
+ *
+ *   0       -> "0"
+ *   999     -> "999"
+ *   1000    -> "1,000"
+ *   1234567 -> "1,234,567"
+ */
+export function formatQty(n: number): string {
+    if (!Number.isFinite(n)) return String(n)
+    const negative = n < 0
+    const digits = String(Math.trunc(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return negative ? `-${digits}` : digits
+}
+
+/**
  * Midpoint of two cent prices as a half-cent-safe dollar string, integer math
  * only (no float on the price path). The mid is (bid + ask) / 2, a half-cent
  * when the sum is odd; centsToDollars renders whole cents, so the trailing

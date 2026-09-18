@@ -1,29 +1,36 @@
 /**
- * Header (SRS §3.7, rebuilt in P7-3). Two rows, the way a real terminal carries
- * them. No product name, no tagline: the phase strips marketing chrome and shows
- * only what the server sent or a documented client-side derivation.
+ * Header (SRS §3.7, rebuilt in P7-3; header polish in P9-Extras). One instrument
+ * row now, the way a real terminal carries the top line. No product name, no
+ * tagline: the phase strips marketing chrome and shows only what the server sent
+ * or a documented client-side derivation.
  *
- * Instrument row, all derived from BOOK plus the session aggregates (never from
- * EXEC arrival order): symbol, last, session change, bid, ask, mid, spread in
- * cents and basis points, session volume.
+ * Instrument row, all derived from BOOK plus the session aggregates and your own
+ * orders (never from EXEC arrival order): symbol, last, session change, bid, ask,
+ * mid, spread in cents and basis points, session volume, and the P9-Extras Filled
+ * and Rem counters. The last-frame clock rides at the end of the same row as
+ * session meta, and the reused ConnectionBadge is pinned to the top-right corner.
  *
- * Session row: connection state (the reused P5-5 ConnectionBadge) and the time
- * the last frame was received. P8-6 removed the FIX session identity strip
- * (SenderCompID / TargetCompID / MsgSeqNum) and its client-assigned caption from
- * this working header; that tag-level view lives only in the FIX inspector now.
- * The client MsgSeqNum counter stays in reducer state and is still incremented;
- * only its header display is gone.
+ * P9-Extras: the P7-3 second "session row" is dissolved. The last-frame clock
+ * moved up into the instrument row and the badge moved to the corner (CSS
+ * margin-left:auto). Whole-number counters (Volume, Filled, Rem) render through
+ * the shared format.ts formatQty so they carry thousands separators. P8-6 had
+ * already removed the FIX session identity strip (SenderCompID / TargetCompID /
+ * MsgSeqNum); the client MsgSeqNum counter still lives in reducer state and is
+ * still incremented, only its header display is gone.
  *
- * The derivation is a pure exported helper (mirrors P5-2 buildLadder / P5-4
- * validateOrderInput) so it is unit-tested without a DOM. Spread cents/bps and
- * change stay local pure helpers here; the midpoint formatter moved to format.ts
- * in P7-4 and the wall-clock formatter in P7-6, so this header, the depth-ladder
- * divider, and the trade tape share one definition instead of each keeping its own.
+ * Filled and Rem are YOUR-order aggregates, distinct from Volume (whole-market
+ * session volume). Filled sums the executed portion over every one of your orders;
+ * Rem sums the still-working remainder over your non-terminal orders. Both are
+ * pure exported helpers (mirroring deriveHeader / buildLadder / validateOrderInput)
+ * so they are unit-tested without a DOM. Spread cents/bps and change stay local
+ * pure helpers here; the midpoint and clock formatters live in format.ts so this
+ * header, the depth-ladder divider, and the trade tape share one definition each.
  */
 
-import { centsToDollars, EMPTY_PRICE, formatClockNanos, midpointLabel } from "../format";
+import { centsToDollars, EMPTY_PRICE, formatClockNanos, formatQty, midpointLabel } from "../format";
 import { ConnectionBadge } from "./ConnectionBadge";
-import type { BookState, ConnectionStatus, TapeEntry } from "../state/reducer";
+import { isTerminal } from "../state/reducer";
+import type { BookState, ConnectionStatus, MyOrder, TapeEntry } from "../state/reducer";
 
 const SYMBOL = "ASML";
 
@@ -40,12 +47,15 @@ export interface HeaderModel {
     readonly spreadCents: string;
     readonly spreadBps: string;
     readonly volume: string;
+    readonly filledQty: string;
+    readonly remainingQty: string;
     readonly lastFrame: string;
 }
 
 export interface HeaderInput {
     readonly book: BookState;
     readonly tape: readonly TapeEntry[];
+    readonly orders: readonly MyOrder[];
     readonly sessionVolume: number;
     readonly sessionOpenCents: number;
     readonly lastFrameNanos: number;
@@ -100,9 +110,33 @@ function changeLabel(lastCents: number, sessionOpenCents: number): ChangeParts {
     return { abs, pct, dir };
 }
 
+/**
+ * Total quantity of your orders executed this session (P9-Extras): the sum of the
+ * filled portion, originalQty - remainingQty clamped at zero, over every order.
+ * Mirrors OpenOrders.filledOf per row, kept inline so this header derivation stays
+ * free of a sibling-component import. Honest across statuses because the reducer
+ * preserves a cancelled row's unfilled remainder (nextOrder ORDER_CANCELLED), so a
+ * cancelled order contributes only its pre-cancel fill and a PENDING / REJECTED row
+ * contributes zero. Pure and exported for direct unit testing.
+ */
+export function sessionFilledQty(orders: readonly MyOrder[]): number {
+    return orders.reduce((sum, o) => sum + Math.max(0, o.originalQty - o.remainingQty), 0);
+}
+
+/**
+ * Your still-working size this session (P9-Extras): the sum of remainingQty over
+ * non-terminal orders only (!isTerminal, i.e. PENDING / OPEN / PARTIALLY_FILLED).
+ * Terminal rows (FILLED / CANCELLED / REJECTED) are excluded, so a cancel's
+ * unfilled leftover never counts as working. Pure and exported for direct unit
+ * testing.
+ */
+export function sessionWorkingQty(orders: readonly MyOrder[]): number {
+    return orders.reduce((sum, o) => (isTerminal(o.status) ? sum : sum + o.remainingQty), 0);
+}
+
 /** Pure, exported: every header field from one state slice. */
 export function deriveHeader(input: HeaderInput): HeaderModel {
-    const { book, tape, sessionVolume, sessionOpenCents, lastFrameNanos } = input;
+    const { book, tape, orders, sessionVolume, sessionOpenCents, lastFrameNanos } = input;
     const lastCents = tape.length > 0 ? tape[0].priceCents : -1;
     const change = changeLabel(lastCents, sessionOpenCents);
 
@@ -116,7 +150,9 @@ export function deriveHeader(input: HeaderInput): HeaderModel {
         mid: midpointLabel(book.bestBid, book.bestAsk),
         spreadCents: spreadCentsLabel(book.bestBid, book.bestAsk),
         spreadBps: spreadBpsLabel(book.bestBid, book.bestAsk),
-        volume: String(sessionVolume),
+        volume: formatQty(sessionVolume),
+        filledQty: formatQty(sessionFilledQty(orders)),
+        remainingQty: formatQty(sessionWorkingQty(orders)),
         lastFrame: formatClockNanos(lastFrameNanos),
     };
 }
@@ -129,6 +165,7 @@ function withUnit(value: string, unit: string): string {
 export interface HeaderProps {
     readonly book: BookState;
     readonly tape: readonly TapeEntry[];
+    readonly orders: readonly MyOrder[];
     readonly sessionVolume: number;
     readonly sessionOpenCents: number;
     readonly lastFrameNanos: number;
@@ -138,12 +175,13 @@ export interface HeaderProps {
 export function Header({
                            book,
                            tape,
+                           orders,
                            sessionVolume,
                            sessionOpenCents,
                            lastFrameNanos,
                            connection,
                        }: HeaderProps) {
-    const m = deriveHeader({ book, tape, sessionVolume, sessionOpenCents, lastFrameNanos });
+    const m = deriveHeader({ book, tape, orders, sessionVolume, sessionOpenCents, lastFrameNanos });
 
     const changeClass =
         m.changeDir === "up"
@@ -199,15 +237,23 @@ export function Header({
                     <span className="header__label">Volume</span>
                     <span className="header__value" data-testid="header-volume">{m.volume}</span>
                 </div>
-            </div>
 
-            <div className="header__session">
-                <ConnectionBadge status={connection} />
+                <div className="header__metric">
+                    <span className="header__label">Filled</span>
+                    <span className="header__value" data-testid="header-filled">{m.filledQty}</span>
+                </div>
+
+                <div className="header__metric">
+                    <span className="header__label">Rem</span>
+                    <span className="header__value" data-testid="header-remaining">{m.remainingQty}</span>
+                </div>
 
                 <div className="header__metric header__metric--last-frame">
                     <span className="header__label">Last frame</span>
                     <span className="header__value" data-testid="header-last-frame">{m.lastFrame}</span>
                 </div>
+
+                <ConnectionBadge status={connection} />
             </div>
         </div>
     );

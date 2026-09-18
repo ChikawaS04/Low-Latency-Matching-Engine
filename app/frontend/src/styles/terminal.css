@@ -257,7 +257,7 @@ body {
     color: var(--text);
 }
 
-/* ---- header (P7-3: instrument row + session row) ------------------------- */
+/* ---- header (P9-Extras: one instrument row, badge pinned top-right) ------- */
 
 .header {
     display: flex;
@@ -325,26 +325,24 @@ body {
     color: var(--ask);
 }
 
-/* Session row: the connection badge and the last-frame clock. The FIX session
-   identity strip (SenderCompID / TargetCompID / MsgSeqNum) and its rules were
-   removed from the markup in P8-6 and dropped from this file in P8-7. */
-.header__session {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding-top: 8px;
-    border-top: 1px solid var(--line);
-}
-
-.header__metric--last-frame {
-    align-items: flex-start;
-}
-
+/* P9-Extras: the last-frame clock now rides at the end of the instrument row.
+   It aligns like the other metrics (inherits .header__metric flex-end) but keeps
+   a dimmer, smaller value so it still reads as session meta, not a market number.
+   The P7-3 second "session row" (.header__session) and its border-top are gone;
+   the FIX session identity strip removed in P8-6/P8-7 stays gone. */
 .header__metric--last-frame .header__value {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-dim);
+}
+
+/* P9-Extras: the Live badge sits in the header's top-right corner. margin-left:auto
+   consumes the free space to its left so it pins to the right edge and stays there
+   as the metrics wrap; align-self:flex-start pins it to the top against the
+   baseline-aligned metric row. */
+.header .badge {
+    margin-left: auto;
+    align-self: flex-start;
 }
 
 /* ---- connection badge ----------------------------------------------------- */
@@ -1463,9 +1461,6 @@ body {
     }
     .header__instrument {
         gap: 16px;
-    }
-    .header__session {
-        gap: 12px;
     }
     .fix-inspector__body {
         grid-template-columns: 1fr;

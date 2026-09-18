@@ -4,6 +4,7 @@ import {
     dollarsToCents,
     EMPTY_PRICE,
     formatClockNanos,
+    formatQty,
     midpointCents,
     midpointLabel,
 } from '../src/format'
@@ -38,6 +39,25 @@ describe('centsToDollars', () => {
         for (const cents of [1, 5, 100, 15020, 15025, 999999]) {
             expect(dollarsToCents(centsToDollars(cents))).toBe(cents)
         }
+    })
+})
+
+describe('formatQty', () => {
+    it('leaves values below a thousand ungrouped', () => {
+        expect(formatQty(0)).toBe('0')
+        expect(formatQty(7)).toBe('7')
+        expect(formatQty(999)).toBe('999')
+    })
+
+    it('groups thousands with commas', () => {
+        expect(formatQty(1000)).toBe('1,000')
+        expect(formatQty(12000)).toBe('12,000')
+        expect(formatQty(1234567)).toBe('1,234,567')
+        expect(formatQty(1000000)).toBe('1,000,000')
+    })
+
+    it('truncates a stray fractional value toward zero before grouping', () => {
+        expect(formatQty(1000.9)).toBe('1,000')
     })
 })
 

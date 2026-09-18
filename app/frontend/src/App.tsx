@@ -32,6 +32,10 @@
  * OrderEntry (entryRef) is created here for the first time, exposing the P7-7
  * setPrice(priceCents) seam so a curve click populates the ticket with no
  * intermediate App state: onPriceSelect={(c) => entryRef.current?.setPrice(c)}.
+ *
+ * P9-Extras: the Header also takes the myOrders slice, from which it derives the
+ * Filled and Rem session counters. It is the only value it needs beyond the BOOK
+ * slice, the tape, and the session aggregates already passed.
  */
 
 import { useRef, useState } from "react";
@@ -72,6 +76,7 @@ export default function App() {
                 <Header
                     book={state.book}
                     tape={state.tape}
+                    orders={state.myOrders}
                     sessionVolume={state.sessionVolume}
                     sessionOpenCents={state.sessionOpenCents}
                     lastFrameNanos={state.lastFrameNanos}

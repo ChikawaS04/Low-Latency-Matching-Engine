@@ -3,7 +3,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 
 import { Header } from "../src/components/Header";
 import type { HeaderProps } from "../src/components/Header";
-import type { BookState, TapeEntry } from "../src/state/reducer";
+import type { BookState, MyOrder, TapeEntry } from "../src/state/reducer";
 
 // P5-0's no-globals stance means RTL's auto-cleanup never registers; wire it
 // explicitly so renders don't bleed across tests.
@@ -21,10 +21,16 @@ const TAPE: TapeEntry[] = [
     { tradeId: 1, priceCents: 15025, quantity: 4, aggressorOrderId: 2, passiveOrderId: 1, timestamp: 222, mine: true },
 ];
 
+const ORDERS: MyOrder[] = [
+    { clOrdId: 1, side: "BUY", priceCents: 15000, originalQty: 10, remainingQty: 4, status: "PARTIALLY_FILLED" },
+    { clOrdId: 2, side: "SELL", priceCents: 15025, originalQty: 5, remainingQty: 5, status: "OPEN" },
+];
+
 function renderHeader(over: Partial<HeaderProps> = {}) {
     const props: HeaderProps = {
         book: BOOK,
         tape: TAPE,
+        orders: ORDERS,
         sessionVolume: 40,
         sessionOpenCents: 15000,
         lastFrameNanos: 1_700_000_000_123_456_789,
@@ -58,10 +64,17 @@ describe("<Header /> instrument row", () => {
         expect(change.className).toContain("header__value--up");
         expect(screen.getByTestId("header-change-pct").textContent).toBe("+0.17%");
     });
+
+    it("renders the Filled and Rem session counters from the orders slice", () => {
+        renderHeader();
+        // filled: (10-4) + (5-5) = 6; working (both non-terminal): 4 + 5 = 9
+        expect(screen.getByTestId("header-filled").textContent).toBe("6");
+        expect(screen.getByTestId("header-remaining").textContent).toBe("9");
+    });
 });
 
-describe("<Header /> session row", () => {
-    it("reuses the connection badge", () => {
+describe("<Header /> connection badge and session meta", () => {
+    it("reuses the connection badge (pinned to the top-right corner)", () => {
         renderHeader({ connection: "open" });
         const badge = screen.getByTestId("connection-badge");
         expect(badge.textContent).toContain("Live");
