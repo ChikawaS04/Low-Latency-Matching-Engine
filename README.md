@@ -1,7 +1,7 @@
-# Limit Order Management System
+# Low-Latency Matching Engine
 
 A low-latency limit order book and matching engine in Java, connected through an LMAX Disruptor
-event pipeline to a FIX protocol gateway and a live React frontend.
+event pipeline to a FIX protocol gateway and a live React trading terminal.
 
 ![Java](https://img.shields.io/badge/Java-21%20LTS-orange)
 ![Build](https://img.shields.io/badge/build-Maven-blue)
@@ -9,12 +9,16 @@ event pipeline to a FIX protocol gateway and a live React frontend.
 ![Disruptor](https://img.shields.io/badge/transport-LMAX%20Disruptor-lightgrey)
 ![Bench](https://img.shields.io/badge/benchmarks-JMH%201.37-informational)
 
-This system implements the core of an exchange matching venue: raw FIX bytes arrive at a gateway,
+This system implements the matching core of an exchange venue: raw FIX bytes arrive at a gateway,
 cross a lock-free ring buffer into a single-threaded matching engine, match under price-time
 priority, and fan out as execution and market-data events to a React trading interface over
-WebSocket. It is a portfolio project, and every architectural decision is made to demonstrate the
-skills that matter in trading-systems engineering: mechanical sympathy, lock-free data structures,
-protocol-level networking, and disciplined scope.
+WebSocket. It owns the book and produces the trades. It is the venue side, not a broker or an
+order-management system that routes orders out to somewhere else. The React terminal plays the role
+of a direct-access participant connected to that venue.
+
+It is a portfolio project, and every architectural decision is made to demonstrate the skills that
+matter in trading-systems engineering: mechanical sympathy, lock-free data structures, protocol-level
+networking, and disciplined scope.
 
 The performance characteristics below are measured with JMH, not asserted. Each number is traceable
 to a recorded benchmark run, and each is reported with its methodology and its caveats.
@@ -186,9 +190,9 @@ release a trading firm would actually pin, so 21 is the measurement target.
 ## Project structure
 
 ```
-Limit-Order-Management-System/
+low-latency-matching-engine/
 ├── app/
-│   ├── backend/                                # Maven module — engine, gateway, pipeline, publishers
+│   ├── backend/                                # Maven module: engine, gateway, pipeline, publishers
 │   │   ├── pom.xml                             # Dependencies, Java 21 release target, JMH plugin
 │   │   └── src/                                # main/java (below) and test/java (below)
 │   └── frontend/                               # Vite + React trading terminal (independent build)
@@ -204,21 +208,21 @@ Limit-Order-Management-System/
 
 ```
 app/backend/src/main/java/
-├── Main.java                                   # Entry point — assembles the full pipeline and runs the demo server
+├── Main.java                                   # Entry point: assembles the full pipeline and runs the demo server
 ├── model/
 │   ├── Order.java                              # Mutable order; domain validation in the constructor
 │   ├── Side.java                               # BUY / SELL
 │   ├── Status.java                             # OPEN, PARTIALLY_FILLED, FILLED, CANCELLED
 │   └── Trade.java                              # Immutable fill record (price in cents, both order ids)
 ├── engine/
-│   ├── MatchingEngine.java                     # The book — price-time priority matching, single-threaded, framework-free
+│   ├── MatchingEngine.java                     # The book: price-time priority matching, single-threaded, framework-free
 │   ├── BookView.java                           # Read-only top-of-book seam (best bid / best ask)
-│   ├── ExecutionListener.java                  # Execution callback seam — primitives only, zero allocation
-│   └── MatchingEngineHandler.java              # Disruptor adapter — OrderEvent in, ExecutionEvent + snapshots out
+│   ├── ExecutionListener.java                  # Execution callback seam: primitives only, zero allocation
+│   └── MatchingEngineHandler.java              # Disruptor adapter: OrderEvent in, ExecutionEvent + snapshots out
 ├── gateway/
-│   ├── OrderGateway.java                       # Inbound ring producer — the FIX-wire / hot-path boundary
+│   ├── OrderGateway.java                       # Inbound ring producer: the FIX-wire / hot-path boundary
 │   ├── FixParser.java                          # Hand-rolled FIX 4.2 tag-value parser (byte[] in, no framework types)
-│   ├── FixFrameDecoder.java                    # Length-prefixed framing — emits one complete message at a time
+│   ├── FixFrameDecoder.java                    # Length-prefixed framing: emits one complete message at a time
 │   └── FixConstants.java                       # SOH delimiter and the in-scope FIX tag numbers
 ├── event/
 │   ├── OrderEvent.java                         # Mutable inbound carrier (gateway → engine)
@@ -229,19 +233,19 @@ app/backend/src/main/java/
 │   ├── ExecutionEventType.java                 # Accepted, filled, partially filled, cancelled, rejected
 │   ├── BookSnapshotEvent.java                  # Mutable bounded top-N depth carrier
 │   ├── BookSnapshotEventFactory.java           # Pre-allocates the snapshot ring slots
-│   ├── InboundPipeline.java                    # Inbound Disruptor wiring — ring size and wait strategy
-│   ├── OutboundPipeline.java                   # Outbound Disruptor wiring — independent consumers, own sequences
-│   └── SnapshotPipeline.java                   # Snapshot Disruptor wiring — the depth feed
+│   ├── InboundPipeline.java                    # Inbound Disruptor wiring: ring size and wait strategy
+│   ├── OutboundPipeline.java                   # Outbound Disruptor wiring: independent consumers, own sequences
+│   └── SnapshotPipeline.java                   # Snapshot Disruptor wiring: the depth feed
 ├── publisher/
-│   ├── WebSocketPublisher.java                 # Fan-out — EXEC and BOOK frames as JSON to every connected client
-│   └── TradeLogger.java                        # Server-side trade tape — logs fills, ignores everything else
+│   ├── WebSocketPublisher.java                 # Fan-out: EXEC and BOOK frames as JSON to every connected client
+│   └── TradeLogger.java                        # Server-side trade tape: logs fills, ignores everything else
 ├── net/
 │   ├── WebSocketServer.java                    # Netty WebSocket server, exposes /ws
-│   ├── WebSocketFrameHandler.java              # Per-connection handler — channel registration, inbound text frames
+│   ├── WebSocketFrameHandler.java              # Per-connection handler: channel registration, inbound text frames
 │   ├── JsonToFix.java                          # Manual JSON order → FIX 4.2 bytes, fed back through the real gateway
-│   └── package_info.java                       # Package docs — the networking boundary
+│   └── package_info.java                       # Package docs: the networking boundary
 ├── market/
-│   └── MarketDataService.java                  # Snapshot consumer — best bid/ask, midpoint, spread
+│   └── MarketDataService.java                  # Snapshot consumer: best bid/ask, midpoint, spread
 └── util/
     └── IDGenerator.java                        # Monotonic order / participant / trade ids
 ```
@@ -251,7 +255,7 @@ app/backend/src/main/java/
 ```
 app/backend/src/test/java/
 ├── engine/
-│   ├── MatchingEngineHandlerTest.java          # Adapter behaviour — inbound event to execution event
+│   ├── MatchingEngineHandlerTest.java          # Adapter behaviour: inbound event to execution event
 │   ├── MatchingEngineHandlerSnapshotTest.java  # Snapshot publication from the adapter
 │   ├── MatchingEngineSnapshotTest.java         # snapshotInto correctness across book depths
 │   └── MatchingEngineBookReadTest.java         # Top-of-book reads on an empty and a populated book
@@ -260,14 +264,14 @@ app/backend/src/test/java/
 │   ├── FixParserScanTest.java                  # Tag scanning over the raw byte buffer
 │   ├── FixParserPriceTest.java                 # Decimal price → integer cents, no floating point
 │   ├── FixParserChecksumTest.java              # Trailer (10=) validation
-│   ├── FixFrameDecoderTest.java                # Framing — partial, split, and back-to-back messages
+│   ├── FixFrameDecoderTest.java                # Framing: partial, split, and back-to-back messages
 │   ├── JsonToFixParseTest.java                 # JSON order → FIX bytes the parser accepts
 │   └── OrderGatewayTest.java                   # Publication onto the inbound ring
 ├── event/
 │   ├── InboundPipelineTest.java                # Ring wiring, slot reuse, and field reset
-│   ├── CapturingOrderHandler.java              # Test double — records OrderEvents off the ring
-│   ├── CapturingExecutionHandler.java          # Test double — records ExecutionEvents
-│   └── CapturingSnapshotHandler.java           # Test double — records BookSnapshotEvents
+│   ├── CapturingOrderHandler.java              # Test double: records OrderEvents off the ring
+│   ├── CapturingExecutionHandler.java          # Test double: records ExecutionEvents
+│   └── CapturingSnapshotHandler.java           # Test double: records BookSnapshotEvents
 ├── net/
 │   ├── WebSocketServerTest.java                # Server bring-up and handshake
 │   ├── WebSocketFrameHandlerTest.java          # Frame handling and channel-group registration
@@ -293,21 +297,21 @@ app/backend/src/test/java/
 ```
 app/frontend/src/
 ├── main.tsx                                    # React entry point
-├── App.tsx                                     # Single screen — one useOrderBook instance, the only frame sender
+├── App.tsx                                     # Single screen: one useOrderBook instance, the only frame sender
 ├── format.ts                                   # Cents ↔ dollars as string integer math, never floating point
 ├── components/
 │   ├── Header.tsx                              # Instrument and top-of-book metrics, derived purely from BOOK
-│   ├── DepthLadder.tsx                         # Depth ladder — asks above, bids below, BOOK only
+│   ├── DepthLadder.tsx                         # Depth ladder: asks above, bids below, BOOK only
 │   ├── TradeTape.tsx                           # Newest-first fill tape, capped
-│   ├── OrderEntry.tsx                          # Manual order entry — transient form state, emits cents
+│   ├── OrderEntry.tsx                          # Manual order entry: transient form state, emits cents
 │   ├── OpenOrders.tsx                          # Working orders and the cancel intent
 │   └── ConnectionBadge.tsx                     # connecting / open / reconnecting pill
 ├── protocol/
-│   ├── messages.ts                             # The wire contract — the only place raw JSON becomes typed
+│   ├── messages.ts                             # The wire contract: the only place raw JSON becomes typed
 │   └── encode.ts                               # Outbound frame construction and ClOrdID generation
 ├── state/
-│   ├── reducer.ts                              # Pure state — BOOK replaces the book, EXEC never touches it
-│   └── useOrderBook.ts                         # Socket lifecycle — capped-backoff reconnect, dispatches to the reducer
+│   ├── reducer.ts                              # Pure state: BOOK replaces the book, EXEC never touches it
+│   └── useOrderBook.ts                         # Socket lifecycle: capped-backoff reconnect, dispatches to the reducer
 └── styles/
     └── terminal.css                            # Terminal styling
 ```
@@ -375,7 +379,7 @@ mvn jmh:benchmark -Djmh.benchmarks=MatchingEngineSnapshotBenchmark -Djmh.prof=gc
 mvn jmh:benchmark -Djmh.f=3
 ```
 
-The benchmark suite covers five questions, each in its own class:
+The benchmark suite covers the following questions, each in its own class:
 
 | Benchmark | Question |
 |---|---|
@@ -415,8 +419,10 @@ tag-value protocol subset, a Disruptor-based event pipeline, WebSocket push to a
 JMH latency benchmarking.
 
 **Out of scope, deliberately:** Spring Boot or any dependency-injection framework, AI trading agents,
-persistence, multi-symbol and multi-venue routing, and authentication. These are omitted to keep the
-project focused on the systems and domain concepts it exists to demonstrate.
+persistence and crash recovery, multi-symbol and multi-venue routing, member accounts and pre-trade
+risk, and authentication. These are omitted to keep the project focused on the systems and domain
+concepts it exists to demonstrate. They are also the features that separate this matching core from a
+production exchange, and are called out here rather than hidden.
 
 ---
 
