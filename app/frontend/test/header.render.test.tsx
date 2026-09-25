@@ -73,6 +73,18 @@ describe("<Header /> instrument row", () => {
     });
 });
 
+describe("<Header /> open field", () => {
+    it("renders the empty marker when no openCents is supplied", () => {
+        renderHeader();
+        expect(screen.getByTestId("header-open").textContent).toBe("—");
+    });
+
+    it("formats a supplied openCents as a dollar string", () => {
+        renderHeader({ openCents: 14980 });
+        expect(screen.getByTestId("header-open").textContent).toBe("149.80");
+    });
+});
+
 describe("<Header /> connection badge and session meta", () => {
     it("reuses the connection badge (pinned to the top-right corner)", () => {
         renderHeader({ connection: "open" });

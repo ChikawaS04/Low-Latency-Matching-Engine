@@ -170,6 +170,15 @@ export interface HeaderProps {
     readonly sessionOpenCents: number;
     readonly lastFrameNanos: number;
     readonly connection: ConnectionStatus;
+    /**
+     * Session-open price in cents for the Open field (P10-5 seam). Distinct from
+     * sessionOpenCents above, which is the first-TRADE price that anchors Chg: this
+     * is the market open (the Alpaca ignition price, arriving P11), rendered directly
+     * in the JSX rather than through deriveHeader so the pure model stays book-derived.
+     * Omitted this phase, so the field shows the "—" sentinel via centsToDollars(-1)
+     * until P11 supplies a value.
+     */
+    readonly openCents?: number;
 }
 
 export function Header({
@@ -180,6 +189,7 @@ export function Header({
                            sessionOpenCents,
                            lastFrameNanos,
                            connection,
+                           openCents,
                        }: HeaderProps) {
     const m = deriveHeader({ book, tape, orders, sessionVolume, sessionOpenCents, lastFrameNanos });
 
@@ -206,6 +216,11 @@ export function Header({
             {m.changeAbs}
                         <span className="header__value-sub" data-testid="header-change-pct">{m.changePct}</span>
           </span>
+                </div>
+
+                <div className="header__metric">
+                    <span className="header__label">Open</span>
+                    <span className="header__value" data-testid="header-open">{centsToDollars(openCents ?? -1)}</span>
                 </div>
 
                 <div className="header__metric header__metric--bid">

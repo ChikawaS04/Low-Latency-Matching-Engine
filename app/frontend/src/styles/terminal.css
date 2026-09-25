@@ -1453,10 +1453,91 @@ body {
     font-size: 12px;
 }
 
+/* ---- navbar (P10-1: NavLink tabs between the strip and the routed body) ---- */
+/* Sits directly under the .topbar strip and above <Routes>, so it persists across
+   both pages. Tabs are quiet sans chrome; the active tab is marked only by the
+   focus-blue underline (never a bid/ask colour, so a tab never reads as a side).
+   The router owns active state via NavLink's className callback (nav__link--active);
+   there is no active/onNavigate prop and no local state. */
+
+.nav {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 0 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line-strong);
+}
+
+.nav__link {
+    padding: 9px 16px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav__link:hover {
+    color: var(--text);
+}
+
+.nav__link--active {
+    color: var(--text);
+    border-bottom-color: var(--focus);
+}
+
+.nav__link:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+}
+
+/* ---- price chart page (P10-4: empty two-region scaffold) ------------------- */
+/* Chart region (left) and side-panel region (right). Placeholders only this phase;
+   the chart fills in P12 and the side panel in P13. Follows the page-scroll model
+   (P8-8): regions size to content and the page scrolls, matching the workspace. */
+
+.chart-page {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr);
+    gap: var(--gap);
+    padding: var(--gap);
+    align-items: start;
+}
+
+.chart-page__region {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+}
+
+.chart-page__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 220px;
+    color: var(--text-faint);
+    font-size: 12px;
+}
+
 /* ---- responsive ----------------------------------------------------------- */
 
 @media (max-width: 900px) {
     .workspace {
+        grid-template-columns: 1fr;
+    }
+    .chart-page {
         grid-template-columns: 1fr;
     }
     .header__instrument {

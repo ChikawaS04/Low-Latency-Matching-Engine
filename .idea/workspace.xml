@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e1aea6c6-22a5-4fbf-ab3b-b1fb46959b08" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/frontend/src/components/Navbar.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/benchmark/MatchingEngineSnapshotBenchmark.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/benchmark/MatchingEngineSnapshotBenchmark.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/net/WebSocketRoundTripTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/net/WebSocketRoundTripTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/backend/src/test/java/publisher/WebSocketPublisherTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/backend/src/test/java/publisher/WebSocketPublisherTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/src/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/src/styles/terminal.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/src/styles/terminal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/frontend/test/header.render.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/frontend/test/header.render.test.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,23 +55,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.3967518874136398" />
-      <entry key="MS500" value="4.206695596513202" />
-      <entry key="S2" value="12.683683197152298" />
-      <entry key="S5" value="23.392316739802745" />
-      <entry key="S10" value="31.657839031223435" />
-      <entry key="S30" value="40.263724896640625" />
-      <entry key="S60" value="42.98844718666791" />
-      <entry key="M2" value="44.54196403206145" />
-      <entry key="M5" value="52.39036348539173" />
-      <entry key="M10" value="81.30982121504306" />
-      <entry key="M15" value="108.65131900213575" />
-      <entry key="M30" value="159.4346131952449" />
-      <entry key="H1" value="200.53029687987976" />
-      <entry key="H2" value="227.15523260169536" />
-      <entry key="H4" value="244.85774532643413" />
-      <entry key="D1" value="423.45766170687034" />
-      <entry key="W1" value="650.001446569809" />
+      <entry key="MS100" value="1.7379163825427066" />
+      <entry key="MS500" value="3.9176276990553034" />
+      <entry key="S2" value="10.837204095120718" />
+      <entry key="S5" value="20.75615990436098" />
+      <entry key="S10" value="28.580202633734128" />
+      <entry key="S30" value="36.66714642784438" />
+      <entry key="S60" value="39.2062826450092" />
+      <entry key="M2" value="40.59836207056483" />
+      <entry key="M5" value="47.31511225054475" />
+      <entry key="M10" value="80.9090781838299" />
+      <entry key="M15" value="120.84797036214411" />
+      <entry key="M30" value="213.65486870665686" />
+      <entry key="H1" value="305.4042934668868" />
+      <entry key="H2" value="372.3356371218381" />
+      <entry key="H4" value="415.4664453510687" />
+      <entry key="D1" value="616.8080777713318" />
+      <entry key="W1" value="849.461825590007" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -88,23 +93,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.3086699854188035" />
-      <entry key="MS500" value="4.159793263820933" />
-      <entry key="S2" value="12.650370453930176" />
-      <entry key="S5" value="23.36779840808438" />
-      <entry key="S10" value="31.64119043482381" />
-      <entry key="S30" value="40.25664133686849" />
-      <entry key="S60" value="42.98466181947906" />
-      <entry key="M2" value="44.54000144877077" />
-      <entry key="M5" value="52.389424741039676" />
-      <entry key="M10" value="81.30904955971077" />
-      <entry key="M15" value="108.65059370670062" />
-      <entry key="M30" value="159.43402741771996" />
-      <entry key="H1" value="200.5299015043151" />
-      <entry key="H2" value="227.1549990783319" />
-      <entry key="H4" value="244.85761646461208" />
-      <entry key="D1" value="423.4576217617206" />
-      <entry key="W1" value="650.0014374653823" />
+      <entry key="MS100" value="1.625389301311961" />
+      <entry key="MS500" value="3.8660506367221488" />
+      <entry key="S2" value="10.795394555377563" />
+      <entry key="S5" value="20.71352486021768" />
+      <entry key="S10" value="28.54519592657096" />
+      <entry key="S30" value="36.65000879308127" />
+      <entry key="S60" value="39.19679183023431" />
+      <entry key="M2" value="40.59336238355324" />
+      <entry key="M5" value="47.3129470936508" />
+      <entry key="M10" value="80.90768844636942" />
+      <entry key="M15" value="120.8467919363837" />
+      <entry key="M30" value="213.6539591579145" />
+      <entry key="H1" value="305.40366245606907" />
+      <entry key="H2" value="372.3352524074313" />
+      <entry key="H4" value="415.4662296484733" />
+      <entry key="D1" value="616.8080216509122" />
+      <entry key="W1" value="849.4618141011836" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -181,7 +186,7 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.WebSocketRoundTripTest">
+  <component name="RunManager" selected="Application.DefaultConfig">
     <configuration name="DefaultConfig" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="25" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -349,7 +354,13 @@
       <workItem from="1789272279653" duration="9367000" />
       <workItem from="1789408179423" duration="4276000" />
       <workItem from="1789493408256" duration="643000" />
-      <workItem from="1789585117773" duration="6861000" />
+      <workItem from="1789585117773" duration="9848000" />
+      <workItem from="1789708491259" duration="1056000" />
+      <workItem from="1789710991108" duration="1802000" />
+      <workItem from="1790284177427" duration="62000" />
+      <workItem from="1790284257767" duration="1487000" />
+      <workItem from="1790317911720" duration="949000" />
+      <workItem from="1790362104801" duration="328000" />
     </task>
     <task id="LOCAL-00017" summary="Add parsePrice for FIX price fields (Step 2)&#10;&#10;Parse a byte-range FIX price to long cents, reusing parseLong for the&#10;integer and fractional parts. Scale the fraction by digit length, not&#10;value: one digit *10, two digits as-is.&#10;&#10;Reject (-1L sentinel, consistent with parseLong) on: empty range, empty&#10;integer part, more than two decimals, non-digit bytes, and non-positive&#10;result. The zero/negative price policy is applied here via the &gt; 0 check,&#10;since parseLong deliberately treats &quot;0&quot; as a valid parse.&#10;&#10;PRICE_SCALE and MAX_DECIMALS kept private to the parser (no second caller).&#10;No String/split/BigDecimal; pure byte[] in, off the hot path.&#10;&#10;Tested: integer-only, one/two decimals, leading zeros, zero-integer-part&#10;with positive fraction, and rejects for &gt;2 decimals, zero, negative, bare&#10;dot, empty integer part, trailing dot, trailing junk, and multiple dots.&#10;Tests embed each price in a wider buffer to verify offset/length bounds.">
       <option name="closed" value="true" />
